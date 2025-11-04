@@ -23,7 +23,8 @@ export default function Navbar() {
   );
 }
 
-export function NavbarItem({ icon: Icon, label }) {
+function NavbarItem({ icon, label }) {
+  const Icon = icon;
   return (
     <li>
       <a href="#" className="flex gap-4 px-4 py-3 text-zinc-400 hover:text-zinc-200 bg-zinc-950 hover:bg-zinc-800  rounded-lg">
