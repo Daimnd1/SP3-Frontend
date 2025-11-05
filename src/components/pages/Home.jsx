@@ -1,11 +1,13 @@
 export default function Home() {
   return (
-    <div className="flex flex-col gap-12 items-center pt-8 min-w-2xs">
+    <div className="flex flex-col gap-12 items-center pt-8">
       <GreetUser />
       <Banner
         title="Explore the benefits of great posture"
         text="Learn how maintaining good posture can improve your health and productivity."
         buttonLabel="Explore now"
+        imageUrl="/Gemini_Generated_Image_xuvrb7xuvrb7xuvr.png"
+        alt="Person working at an ergonomic standing desk"
       />
       <div className="flex flex-wrap justify-center items-stretch gap-6 w-full">
         <Card title="Tracker" text="You stood for " time="2h" />
@@ -31,18 +33,20 @@ function Banner({
   title = "Title here",
   text = "Description here",
   buttonLabel = "Button label here",
+  imageUrl = "/vite.svg",
+  alt = "Image alt here",
 }) {
   return (
     <div className="flex flex-wrap w-full rounded-lg items-center justify-center gap-8">
-      <div className="flex flex-col flex-1 min-w-[300px] max-w-146 text-zinc-400 font-semibold">
+      <div className="flex flex-col flex-1 min-w-[200px] max-w-146 text-zinc-400 font-semibold text-center md:text-left items-center md:items-start">
         <h3 className="text-2xl text-zinc-200 mb-4">{title}</h3>
         <p className="mb-8">{text}</p>
         <Button label={buttonLabel} />
       </div>
-      <div className="flex-1 min-w-96 max-w-146 rounded-lg">
+      <div className="flex-1 min-w-[200px] max-w-146 h-100 rounded-lg overflow-hidden">
         <img
-          src="/Gemini_Generated_Image_xuvrb7xuvrb7xuvr.png"
-          alt="Person working at an ergonomic standing desk"
+          src={imageUrl}
+          alt={alt}
           className="object-cover w-full h-full rounded-lg"
         />
       </div>
