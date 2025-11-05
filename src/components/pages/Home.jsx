@@ -1,0 +1,77 @@
+export default function Home() {
+  return (
+    <div className="flex flex-col gap-12 items-center pt-8 min-w-2xs">
+      <GreetUser />
+      <Banner
+        title="Explore the benefits of great posture"
+        text="Learn how maintaining good posture can improve your health and productivity."
+        buttonLabel="Explore now"
+      />
+      <div className="flex flex-wrap justify-center items-stretch gap-6 w-full">
+        <Card title="Tracker" text="You stood for " time="2h" />
+        <Card title="Reminder" text="Time to take a break!" />
+        <Card title="Goal" text="Stand up for 4 hours today!" />
+      </div>
+    </div>
+  );
+}
+
+function GreetUser() {
+  return (
+    <div className="text-center">
+      <h1 className="font-bold text-5xl text-zinc-200">Hi, user</h1>
+      <h2 className="font-medium text-2xl text-zinc-400 mt-4">
+        Welcome to your smart workspace
+      </h2>
+    </div>
+  );
+}
+
+function Banner({
+  title = "Title here",
+  text = "Description here",
+  buttonLabel = "Button label here",
+}) {
+  return (
+    <div className="flex flex-wrap w-full rounded-lg items-center justify-center gap-8">
+      <div className="flex flex-col flex-1 min-w-[300px] max-w-146 text-zinc-400 font-semibold">
+        <h3 className="text-2xl text-zinc-200 mb-4">{title}</h3>
+        <p className="mb-8">{text}</p>
+        <Button label={buttonLabel} />
+      </div>
+      <div className="flex-1 min-w-96 max-w-146 rounded-lg">
+        <img
+          src="/Gemini_Generated_Image_xuvrb7xuvrb7xuvr.png"
+          alt="Person working at an ergonomic standing desk"
+          className="object-cover w-full h-full rounded-lg"
+        />
+      </div>
+    </div>
+  );
+}
+
+function Button({ label, onClick = () => {} }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-fit px-4 py-2 bg-sky-900 hover:bg-sky-700 text-zinc-200 font-semibold rounded-lg`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function Card({
+  title = "Card Title",
+  text = "Card description goes here.",
+  time = "",
+}) {
+  return (
+    <div className="flex flex-col flex-1 min-w-[200px] max-w-[400px] p-4 bg-zinc-800 rounded-lg text-zinc-400 font-semibold">
+      <h4 className="text-xl text-zinc-400 mb-2">{title}</h4>
+      <p className="text-zinc-200">
+        {text} {time && <span className="text-2xl font-bold">{time}</span>}
+      </p>
+    </div>
+  );
+}
