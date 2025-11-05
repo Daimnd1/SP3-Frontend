@@ -9,6 +9,7 @@ export default function Home() {
         imageUrl="/Gemini_Generated_Image_xuvrb7xuvrb7xuvr.png"
         alt="Person working at an ergonomic standing desk"
       />
+      <h2 className="md:self-start text-2xl text-zinc-200 font-semibold -mb-8">Posture</h2>
       <div className="flex flex-wrap justify-center items-stretch gap-6 w-full">
         <Card title="Tracker" text="You stood for " time="2h" />
         <Card title="Reminder" text="Time to take a break!" />
