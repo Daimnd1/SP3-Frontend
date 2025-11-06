@@ -75,7 +75,7 @@ function Card({
     <div className="flex flex-col flex-1 min-w-[200px] max-w-[400px] p-4 bg-zinc-800 rounded-lg text-zinc-400 font-semibold">
       <h4 className="text-xl text-zinc-400 mb-2">{title}</h4>
       <p className="text-zinc-200">
-        {text} {time && <span className="text-2xl font-bold">{time}</span>}
+        {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
       </p>
     </div>
   );
