@@ -17,7 +17,7 @@ export default function Desk() {
 
 function DeskDashboard({ isConnected, setIsConnected }) {
   return (
-    <div className="flex flex-col bg-zinc-800 w-full rounded-xl gap-4 p-8 pb-24">
+    <div className="flex flex-col bg-zinc-800 border-2 border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
         <div className="flex justify-between md:justify-center items-center">
           <h2 className="font-bold text-2xl text-zinc-200">Desk</h2>
           <div className="md:hidden">

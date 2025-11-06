@@ -77,7 +77,7 @@ function NavbarItem({ icon, label, currentPage, onNavigate, iconSize = 24 }) {
         onClick={() => onNavigate(label)}
         className={`flex items-center justify-start md:justify-center lg:justify-start py-3 w-full text-left rounded-lg ${
           isActive 
-            ? 'text-sky-200 bg-sky-950' 
+            ? 'text-sky-200 bg-sky-900/80' 
             : 'text-zinc-400 hover:text-zinc-200 bg-zinc-950 hover:bg-zinc-800'
         }`}
       >
