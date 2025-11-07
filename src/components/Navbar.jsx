@@ -13,7 +13,7 @@ export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) 
         flex-col justify-between 
         min-w-64 md:min-w-fit lg:min-w-64 
         h-[calc(100vh-2rem)] min-h-fit 
-        px-2 py-5 rounded-2xl flex-none bg-zinc-950 md:mr-4
+        px-2 py-5 rounded-2xl flex-none bg-zinc-950
         ${isOpen ? 'flex' : 'hidden md:flex'}
       `}
     >

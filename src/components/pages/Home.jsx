@@ -72,13 +72,15 @@ function Card({
   time = "",
 }) {
   return (
-    <div className="flex flex-1 min-w-[200px] max-w-[400px] gap-4 p-6 bg-sky-900/80 rounded-lg text-zinc-400 font-semibold">
-      <div className="w-1 h-24 bg-sky-500 rounded-full"></div>
-      <div className="flex flex-col">
-        <h4 className="text-xl text-zinc-400 mb-2">{title}</h4>
-        <p className="text-zinc-200">
-          {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
-        </p>
+    <div className="flex flex-wrap flex-1 bg-sky-900/60 rounded-lg p-6">
+      <div className="flex items-stretch gap-4">
+        <div className="w-1 bg-sky-500 rounded-full"></div>
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold text-zinc-200 mb-2">{title}</h3>
+          <p className="text-zinc-300 text-lg">
+            {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
+          </p>
+        </div>
       </div>
     </div>
   );
