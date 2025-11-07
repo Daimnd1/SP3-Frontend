@@ -42,7 +42,7 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
           isOpen={isMobileMenuOpen}
         />
       </aside>
-      <main className="w-full lg:px-16 py-8 overflow-auto">
+      <main className="w-full md:px-4 lg:px-16 py-8 overflow-auto">
         {children}
       </main>
       <MobileMenuButton 

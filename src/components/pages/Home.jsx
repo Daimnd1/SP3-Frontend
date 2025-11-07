@@ -6,7 +6,7 @@ export default function Home() {
         title="Explore the benefits of great posture"
         text="Learn how maintaining good posture can improve your health and productivity."
         buttonLabel="Explore now"
-        imageUrl="/Gemini_Generated_Image_xuvrb7xuvrb7xuvr.png"
+        imageUrl="/man-at-desk-no-bg.png"
         alt="Person working at an ergonomic standing desk"
       />
       <h2 className="md:self-start text-2xl text-zinc-200 font-semibold -mb-8">Posture</h2>
@@ -59,7 +59,7 @@ function Button({ label, onClick = () => {} }) {
   return (
     <button
       onClick={onClick}
-      className={`w-fit px-4 py-2 bg-sky-900 hover:bg-sky-700 text-zinc-200 font-semibold rounded-lg`}
+      className={`w-fit px-4 py-2 bg-sky-900/80 hover:bg-sky-700 text-zinc-200 font-semibold rounded-lg`}
     >
       {label}
     </button>
@@ -72,11 +72,16 @@ function Card({
   time = "",
 }) {
   return (
-    <div className="flex flex-col flex-1 min-w-[200px] max-w-[400px] p-4 bg-zinc-800 rounded-lg text-zinc-400 font-semibold">
-      <h4 className="text-xl text-zinc-400 mb-2">{title}</h4>
-      <p className="text-zinc-200">
-        {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
-      </p>
+    <div className="flex flex-wrap flex-1 bg-sky-900/60 rounded-lg p-6">
+      <div className="flex items-stretch gap-4">
+        <div className="w-1 bg-sky-500 rounded-full"></div>
+        <div className="flex-1">
+          <h3 className="text-xl font-semibold text-zinc-200 mb-2">{title}</h3>
+          <p className="text-zinc-300 text-lg">
+            {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
