@@ -14,6 +14,7 @@ export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) 
         min-w-64 md:min-w-fit lg:min-w-64 
         h-[calc(100vh-2rem)] min-h-fit 
         px-2 py-5 rounded-2xl flex-none bg-zinc-950
+        z-50
         ${isOpen ? 'flex' : 'hidden md:flex'}
       `}
     >

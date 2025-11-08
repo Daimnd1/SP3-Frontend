@@ -40,7 +40,9 @@ export default function Profile() {
                 </button>
               </div>
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-zinc-200">{profileData.name}</h2>
+                <h2 className="text-2xl font-bold text-zinc-200">
+                  {profileData.name}
+                </h2>
                 <p className="text-zinc-400">{profileData.occupation}</p>
               </div>
             </div>
@@ -49,7 +51,9 @@ export default function Profile() {
             <div className="border-t border-zinc-700 pt-4 space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-zinc-400">Member Since</span>
-                <span className="text-zinc-200 font-semibold">{profileData.joinDate}</span>
+                <span className="text-zinc-200 font-semibold">
+                  {profileData.joinDate}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-zinc-400">Desk Sessions</span>
@@ -68,7 +72,9 @@ export default function Profile() {
           {/* Personal Information */}
           <div className="bg-zinc-800 border-2 border-zinc-700 rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-zinc-200">Personal Information</h2>
+              <h2 className="text-2xl font-semibold text-zinc-200">
+                Personal Information
+              </h2>
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
@@ -100,14 +106,18 @@ export default function Profile() {
                 label="Full Name"
                 value={editedData.name}
                 isEditing={isEditing}
-                onChange={(value) => setEditedData({ ...editedData, name: value })}
+                onChange={(value) =>
+                  setEditedData({ ...editedData, name: value })
+                }
               />
               <ProfileField
                 icon={Mail}
                 label="Email"
                 value={editedData.email}
                 isEditing={isEditing}
-                onChange={(value) => setEditedData({ ...editedData, email: value })}
+                onChange={(value) =>
+                  setEditedData({ ...editedData, email: value })
+                }
                 type="email"
               />
               <ProfileField
@@ -115,32 +125,44 @@ export default function Profile() {
                 label="Occupation"
                 value={editedData.occupation}
                 isEditing={isEditing}
-                onChange={(value) => setEditedData({ ...editedData, occupation: value })}
+                onChange={(value) =>
+                  setEditedData({ ...editedData, occupation: value })
+                }
               />
               <ProfileField
                 icon={Calendar}
                 label="Member Since"
                 value={editedData.joinDate}
                 isEditing={isEditing}
-                onChange={(value) => setEditedData({ ...editedData, joinDate: value })}
+                onChange={(value) =>
+                  setEditedData({ ...editedData, joinDate: value })
+                }
               />
             </div>
           </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-function ProfileField({ icon: Icon, label, value, isEditing, onChange, type = "text" }) {
+function ProfileField({
+  icon: Icon,
+  label,
+  value,
+  isEditing,
+  onChange,
+  type = "text",
+}) {
   return (
     <div className="flex items-center gap-4">
       <div className="p-3 bg-zinc-700 rounded-lg">
         <Icon size={24} className="text-zinc-400" />
       </div>
       <div className="flex-1">
-        <label className="block text-sm font-medium text-zinc-400 mb-1">{label}</label>
+        <label className="block text-sm font-medium text-zinc-400 mb-1">
+          {label}
+        </label>
         {isEditing ? (
           <input
             type={type}
