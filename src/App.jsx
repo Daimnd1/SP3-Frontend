@@ -5,7 +5,6 @@ import Desk from './components/pages/Desk.jsx'
 import Reports from './components/pages/Reports.jsx'
 import Configuration from './components/pages/Configuration.jsx'
 import AboutUs from './components/pages/AboutUs.jsx'
-import Help from './components/pages/Help.jsx'
 import Settings from './components/pages/Settings.jsx'
 import Profile from './components/pages/Profile.jsx'
 import Layout from './components/layout/Layout.jsx'
@@ -26,7 +25,6 @@ function App() {
       case 'Reports': return <Reports />
       case 'Configuration': return <Configuration heightPresets={heightPresets} setHeightPresets={setHeightPresets} />
       case 'About us': return <AboutUs />
-      case 'Help': return <Help />
       case 'Settings': return <Settings />
       case 'Profile': return <Profile />
       default: return <Home />
