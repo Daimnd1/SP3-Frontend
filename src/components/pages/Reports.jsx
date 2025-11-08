@@ -72,142 +72,168 @@ const sessionDurationData = [
 // Analyze posture data to identify habits and generate tips
 function analyzePostureData() {
   // Calculate averages
-  const avgSittingTime = postureTimeData.reduce((sum, day) => sum + day.sitting, 0) / postureTimeData.length;
-  const avgStandingTime = postureTimeData.reduce((sum, day) => sum + day.standing, 0) / postureTimeData.length;
-  const avgChanges = postureChangeData.reduce((sum, day) => sum + day.changes, 0) / postureChangeData.length;
-  const avgSittingSession = sessionDurationData.reduce((sum, day) => sum + day.avgSitting, 0) / sessionDurationData.length;
-  const avgStandingSession = sessionDurationData.reduce((sum, day) => sum + day.avgStanding, 0) / sessionDurationData.length;
-  
+  const avgSittingTime =
+    postureTimeData.reduce((sum, day) => sum + day.sitting, 0) /
+    postureTimeData.length;
+  const avgStandingTime =
+    postureTimeData.reduce((sum, day) => sum + day.standing, 0) /
+    postureTimeData.length;
+  const avgChanges =
+    postureChangeData.reduce((sum, day) => sum + day.changes, 0) /
+    postureChangeData.length;
+  const avgSittingSession =
+    sessionDurationData.reduce((sum, day) => sum + day.avgSitting, 0) /
+    sessionDurationData.length;
+  const avgStandingSession =
+    sessionDurationData.reduce((sum, day) => sum + day.avgStanding, 0) /
+    sessionDurationData.length;
+
   const totalActiveTime = avgSittingTime + avgStandingTime;
   const sittingPercentage = (avgSittingTime / totalActiveTime) * 100;
-  
+
   const habits = [];
   const tips = [];
-  
+
   // Identify multiple habits based on data
   if (sittingPercentage > 60) {
     habits.push({
       text: `You sit ${sittingPercentage.toFixed(0)}% of your active time`,
-      emoji: "🪑"
+      emoji: "🪑",
     });
   }
-  
+
   if (avgChanges < 10) {
     habits.push({
       text: `Low posture changes: ${avgChanges.toFixed(0)} times per day`,
-      emoji: "😴"
+      emoji: "😴",
     });
   }
-  
+
   if (avgSittingSession > 40) {
     habits.push({
-      text: `Long sitting sessions: ${avgSittingSession.toFixed(0)} min average`,
-      emoji: "⏱️"
+      text: `Long sitting sessions: ${avgSittingSession.toFixed(
+        0
+      )} min average`,
+      emoji: "⏱️",
     });
   }
-  
+
   if (avgStandingSession < 25) {
     habits.push({
-      text: `Short standing sessions: ${avgStandingSession.toFixed(0)} min average`,
-      emoji: "⚡"
+      text: `Short standing sessions: ${avgStandingSession.toFixed(
+        0
+      )} min average`,
+      emoji: "⚡",
     });
   }
-  
+
   if (avgStandingTime < 2.5) {
     habits.push({
       text: `Only ${avgStandingTime.toFixed(1)}h standing time per day`,
-      emoji: "📉"
+      emoji: "📉",
     });
   }
-  
+
   // Positive habits
   if (sittingPercentage < 50 && avgChanges > 10) {
     habits.push({
       text: "Great balance between sitting and standing!",
-      emoji: "✨"
+      emoji: "✨",
     });
   }
-  
+
   if (avgChanges > 12) {
     habits.push({
       text: "Excellent posture change frequency",
-      emoji: "🎯"
+      emoji: "🎯",
     });
   }
-  
+
   if (avgStandingTime > 3) {
     habits.push({
       text: `Strong standing habit: ${avgStandingTime.toFixed(1)}h daily`,
-      emoji: "💪"
+      emoji: "💪",
     });
   }
-  
+
   // If no habits identified, add a default
   if (habits.length === 0) {
     habits.push({
       text: "Building healthy posture habits",
-      emoji: "🌱"
+      emoji: "🌱",
     });
   }
-  
+
   // Generate personalized tips based on habits
   if (sittingPercentage > 60) {
     tips.push({
       text: "Try standing for 2-3 hours daily. Start with 15-minute intervals!",
-      emoji: "💡"
+      emoji: "💡",
     });
   }
-  
+
   if (avgChanges < 10) {
     tips.push({
       text: "Change posture every 30-45 minutes to improve circulation",
-      emoji: "🔄"
+      emoji: "🔄",
     });
   }
-  
+
   if (avgSittingSession > 40) {
     tips.push({
       text: "Limit sitting sessions to 30-40 minutes, then stand up",
-      emoji: "⏰"
+      emoji: "⏰",
     });
   }
-  
+
   if (avgStandingTime < 2.5) {
     tips.push({
       text: "Aim for 2+ hours of standing time per day for better health",
-      emoji: "🎯"
+      emoji: "🎯",
     });
   }
-  
+
   if (avgStandingSession < 25) {
     tips.push({
       text: "Extend standing sessions to 20-30 minutes for better benefits",
-      emoji: "📈"
+      emoji: "📈",
     });
   }
-  
+
   // Positive reinforcement tips
   if (avgChanges > 12) {
     tips.push({
       text: "Great job! Keep alternating postures regularly",
-      emoji: "⭐"
+      emoji: "⭐",
     });
   }
-  
+
   // General wellness tips
   if (tips.length < 3) {
     const generalTips = [
-      { text: "Take a 5-minute walk every 2 hours to boost energy", emoji: "🚶" },
-      { text: "Stretch your legs and back when switching postures", emoji: "🧘" },
-      { text: "Set hourly reminders to check and adjust your posture", emoji: "⏰" },
-      { text: "Stay hydrated - it encourages regular movement breaks", emoji: "�" }
+      {
+        text: "Take a 5-minute walk every 2 hours to boost energy",
+        emoji: "🚶",
+      },
+      {
+        text: "Stretch your legs and back when switching postures",
+        emoji: "🧘",
+      },
+      {
+        text: "Set hourly reminders to check and adjust your posture",
+        emoji: "⏰",
+      },
+      {
+        text: "Stay hydrated - it encourages regular movement breaks",
+        emoji: "�",
+      },
     ];
-    
-    generalTips.forEach(tip => {
+
+    generalTips.forEach((tip) => {
       if (tips.length < 3) tips.push(tip);
     });
   }
-  
+
   return { habits, tips };
 }
 
@@ -219,19 +245,17 @@ export default function Reports() {
       <h1 className="font-semibold text-4xl text-zinc-200">Reports</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card
-          title="Habits"
-          items={habits}
-        />
-        <Card 
-          title="Tips" 
-          items={tips}
-        />
+        <Card title="Habits" items={habits} />
+        <Card title="Tips" items={tips} />
       </div>
 
       <ChartCard title="Daily Sitting vs Standing Time" height={350}>
         <BarChart data={postureTimeData}>
-          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={chartColors.grid}
+            vertical={false}
+          />
           <XAxis dataKey="day" {...commonAxisProps} />
           <YAxis
             stroke={chartColors.axis}
@@ -243,10 +267,23 @@ export default function Reports() {
               fill: chartColors.axis,
             }}
           />
-          <Tooltip contentStyle={tooltipStyle} formatter={(value) => `${value}h`} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            formatter={(value) => `${value}h`}
+          />
           <Legend wrapperStyle={{ color: "#e2e8f0" }} />
-          <Bar dataKey="sitting" fill={chartColors.sitting} name="Sitting" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="standing" fill={chartColors.standing} name="Standing" radius={[4, 4, 0, 0]} />
+          <Bar
+            dataKey="sitting"
+            fill={chartColors.sitting}
+            name="Sitting"
+            radius={[4, 4, 0, 0]}
+          />
+          <Bar
+            dataKey="standing"
+            fill={chartColors.standing}
+            name="Standing"
+            radius={[4, 4, 0, 0]}
+          />
         </BarChart>
       </ChartCard>
 
@@ -264,7 +301,10 @@ export default function Reports() {
               fill: chartColors.axis,
             }}
           />
-          <Tooltip contentStyle={tooltipStyle} formatter={(value) => `${value} changes`} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            formatter={(value) => `${value} changes`}
+          />
           <Legend wrapperStyle={{ color: "#e2e8f0" }} />
           <Line
             type="monotone"
@@ -280,7 +320,11 @@ export default function Reports() {
 
       <ChartCard title="Average Session Duration" height={300}>
         <BarChart data={sessionDurationData}>
-          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={chartColors.grid}
+            vertical={false}
+          />
           <XAxis dataKey="day" {...commonAxisProps} />
           <YAxis
             stroke={chartColors.axis}
@@ -292,10 +336,23 @@ export default function Reports() {
               fill: chartColors.axis,
             }}
           />
-          <Tooltip contentStyle={tooltipStyle} formatter={(value) => `${value} min`} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            formatter={(value) => `${value} min`}
+          />
           <Legend wrapperStyle={{ color: "#e2e8f0" }} />
-          <Bar dataKey="avgSitting" fill={chartColors.avgSitting} name="Avg Sitting" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="avgStanding" fill={chartColors.avgStanding} name="Avg Standing" radius={[4, 4, 0, 0]} />
+          <Bar
+            dataKey="avgSitting"
+            fill={chartColors.avgSitting}
+            name="Avg Sitting"
+            radius={[4, 4, 0, 0]}
+          />
+          <Bar
+            dataKey="avgStanding"
+            fill={chartColors.avgStanding}
+            name="Avg Standing"
+            radius={[4, 4, 0, 0]}
+          />
         </BarChart>
       </ChartCard>
     </div>
@@ -317,20 +374,20 @@ function Card({ title, items }) {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 2;
   const totalPages = Math.ceil(items.length / itemsPerPage);
-  
+
   const currentItems = items.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
-  
+
   const nextPage = () => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
   };
-  
+
   const prevPage = () => {
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   };
-  
+
   return (
     <div className="flex bg-sky-900/60 rounded-lg p-6">
       <div className="flex items-stretch gap-4">
@@ -345,8 +402,18 @@ function Card({ title, items }) {
                   className="text-zinc-400 hover:text-zinc-200 transition-colors"
                   aria-label="Previous"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                 </button>
                 <span className="text-sm text-zinc-400">
@@ -357,8 +424,18 @@ function Card({ title, items }) {
                   className="text-zinc-400 hover:text-zinc-200 transition-colors"
                   aria-label="Next"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -366,7 +443,10 @@ function Card({ title, items }) {
           </div>
           <ul className="space-y-3">
             {currentItems.map((item, index) => (
-              <li key={index} className="text-zinc-300 text-base flex items-start gap-2">
+              <li
+                key={index}
+                className="text-zinc-300 text-base flex items-start gap-2"
+              >
                 <span className="text-lg shrink-0">{item.emoji}</span>
                 <span>{item.text}</span>
               </li>
