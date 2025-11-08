@@ -5,8 +5,7 @@ import {
   ChartColumn, 
   CircleUserRound, 
   Settings, 
-  Info, 
-  CircleQuestionMark 
+  Info
 } from "lucide-react";
 
 export const mainNavItems = [
@@ -18,7 +17,6 @@ export const mainNavItems = [
 
 export const footerNavItems = [
   { icon: Info, label: "About us" },
-  { icon: CircleQuestionMark, label: "Help" },
   { icon: Settings, label: "Settings" },
 ];
 
