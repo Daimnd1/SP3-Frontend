@@ -9,7 +9,9 @@ export default function Home() {
         imageUrl="/man-at-desk-no-bg.png"
         alt="Person working at an ergonomic standing desk"
       />
-      <h2 className="md:self-start text-2xl text-zinc-200 font-semibold -mb-8">Posture</h2>
+      <h2 className="md:self-start text-2xl text-zinc-200 font-semibold -mb-8">
+        Posture
+      </h2>
       <div className="flex flex-wrap justify-center items-stretch gap-6 w-full">
         <Card title="Tracker" text="You stood for " time="2h" />
         <Card title="Reminder" text="Time to take a break!" />
@@ -78,7 +80,16 @@ function Card({
         <div className="flex-1">
           <h3 className="text-xl font-semibold text-zinc-200 mb-2">{title}</h3>
           <p className="text-zinc-300 text-lg">
-            {text} {time && <span className={`text-2xl font-bold ${time < '2h' ? 'text-sky-500' : 'text-red-500'}`}>{time}</span>}
+            {text}{" "}
+            {time && (
+              <span
+                className={`text-2xl font-bold ${
+                  time < "2h" ? "text-sky-500" : "text-red-500"
+                }`}
+              >
+                {time}
+              </span>
+            )}
           </p>
         </div>
       </div>

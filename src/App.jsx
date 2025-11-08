@@ -12,13 +12,19 @@ import Layout from './components/layout/Layout.jsx'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('Home')
+  const [heightPresets, setHeightPresets] = useState([
+    { id: 1, name: "Sitting", height: 720, unit: "mm" },
+    { id: 2, name: "Standing", height: 1100, unit: "mm" },
+  ])
+  const [isConnected, setIsConnected] = useState(false)
+  const [currentHeight, setCurrentHeight] = useState(750)
 
   const renderPage = () => {
     switch(currentPage) {
       case 'Home': return <Home />
-      case 'Desk': return <Desk />
+      case 'Desk': return <Desk heightPresets={heightPresets} isConnected={isConnected} setIsConnected={setIsConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} />
       case 'Reports': return <Reports />
-      case 'Configuration': return <Configuration />
+      case 'Configuration': return <Configuration heightPresets={heightPresets} setHeightPresets={setHeightPresets} />
       case 'About us': return <AboutUs />
       case 'Help': return <Help />
       case 'Settings': return <Settings />
