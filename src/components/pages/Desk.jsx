@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   ArrowUp,
   ArrowDown,
@@ -6,10 +6,6 @@ import {
   ArrowDownToLine,
   Power,
 } from "lucide-react";
-
-const BUTTON_STYLE_ENABLED =
-  "p-2 text-sky-900 hover:text-sky-700 transition-colors cursor-pointer";
-const BUTTON_STYLE_DISABLED = "p-2 text-zinc-700 cursor-not-allowed";
 
 export default function Desk({ heightPresets = [], isConnected, setIsConnected, currentHeight, setCurrentHeight }) {
   return (
@@ -173,7 +169,7 @@ function ButtonMoveDesk({ direction, icon = ArrowUp, disabled, heightPresets = [
   const timeoutRef = useRef(null);
 
   const handleMouseDown = () => {
-    if (disabled) return;
+    if (disabled) return; 
 
     // For preset buttons (Standing/Sitting), set height directly
     if (direction === "Standing" || direction === "Sitting") {
@@ -220,7 +216,7 @@ function ButtonMoveDesk({ direction, icon = ArrowUp, disabled, heightPresets = [
 
   return (
     <button
-      className={disabled ? BUTTON_STYLE_DISABLED : BUTTON_STYLE_ENABLED}
+      className={disabled ? "p-2 text-zinc-700 cursor-not-allowed" : "p-2 text-sky-900 hover:text-sky-700 transition-colors cursor-pointer"}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}

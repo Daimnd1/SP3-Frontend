@@ -69,7 +69,6 @@ export default function Profile() {
 
         {/* Profile Information */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
           <div className="bg-zinc-800 border-2 border-zinc-700 rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold text-zinc-200">
@@ -132,11 +131,8 @@ export default function Profile() {
               <ProfileField
                 icon={Calendar}
                 label="Member Since"
-                value={editedData.joinDate}
-                isEditing={isEditing}
-                onChange={(value) =>
-                  setEditedData({ ...editedData, joinDate: value })
-                }
+                value={profileData.joinDate}
+                isEditing={false}
               />
             </div>
           </div>

@@ -8,6 +8,7 @@ export default function Home() {
         buttonLabel="Explore now"
         imageUrl="/man-at-desk-no-bg.png"
         alt="Person working at an ergonomic standing desk"
+        buttonHref="https://www.ohow.com/2021/02/08/standing-desk-ergonomics-7-benefits-of-standing-at-work/"
       />
       <h2 className="md:self-start text-2xl text-zinc-200 font-semibold -mb-8">
         Posture
@@ -38,13 +39,14 @@ function Banner({
   buttonLabel = "Button label here",
   imageUrl = "/vite.svg",
   alt = "Image alt here",
+  buttonHref,
 }) {
   return (
     <div className="flex flex-wrap w-full rounded-lg items-center justify-center gap-8">
       <div className="flex flex-col flex-1 min-w-[200px] max-w-146 text-zinc-400 font-semibold text-center md:text-left items-center md:items-start">
         <h3 className="text-2xl text-zinc-200 mb-4">{title}</h3>
         <p className="mb-8">{text}</p>
-        <Button label={buttonLabel} />
+        <Button label={buttonLabel} href={buttonHref} />
       </div>
       <div className="flex-1 min-w-[200px] max-w-146 h-100 rounded-lg overflow-hidden">
         <img
@@ -57,7 +59,21 @@ function Banner({
   );
 }
 
-function Button({ label, onClick = () => {} }) {
+function Button({ label, onClick, href }) {
+  // If href is provided, render as a link; otherwise as a button
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`w-fit px-4 py-2 bg-sky-900/80 hover:bg-sky-700 text-zinc-200 font-semibold rounded-lg inline-block text-center`}
+      >
+        {label}
+      </a>
+    );
+  }
+
   return (
     <button
       onClick={onClick}
