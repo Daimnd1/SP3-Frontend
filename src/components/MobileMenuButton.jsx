@@ -8,9 +8,9 @@ export default function MobileMenuButton({ isOpen, onClick }) {
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
       {isOpen ? (
-        <X className="w-8 h-8 text-zinc-400" />
+        <X className="w-8 h-8 text-gray-700 dark:text-zinc-400" />
       ) : (
-        <Menu className="w-8 h-8 text-zinc-400" />
+        <Menu className="w-8 h-8 text-gray-700 dark:text-zinc-400" />
       )}
     </button>
   );

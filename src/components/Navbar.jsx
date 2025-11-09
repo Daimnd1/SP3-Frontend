@@ -13,7 +13,8 @@ export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) 
         flex-col justify-between 
         min-w-64 md:min-w-fit lg:min-w-64 
         h-[calc(100vh-2rem)] min-h-fit 
-        px-2 py-5 rounded-2xl flex-none bg-zinc-950
+        px-2 py-5 rounded-2xl flex-none bg-white dark:bg-zinc-950
+        shadow-lg dark:shadow-none
         z-50
         ${isOpen ? 'flex' : 'hidden md:flex'}
       `}
@@ -58,9 +59,9 @@ function NavSection({ title, children }) {
     <ul className="flex flex-col">
       {title && (
         <>
-          <h1 className="block md:hidden lg:block">{title}</h1>
-          <h1 className="hidden md:block lg:hidden text-center font-bold">{title[0]}</h1>
-          <div className="border-t border-zinc-800 my-2" />
+          <h1 className="block md:hidden lg:block text-gray-900 dark:text-zinc-200">{title}</h1>
+          <h1 className="hidden md:block lg:hidden text-center font-bold text-gray-900 dark:text-zinc-200">{title[0]}</h1>
+          <div className="border-t border-gray-300 dark:border-zinc-800 my-2" />
         </>
       )}
       {children}
@@ -78,8 +79,8 @@ function NavbarItem({ icon, label, currentPage, onNavigate, iconSize = 24 }) {
         onClick={() => onNavigate(label)}
         className={`flex items-center justify-start md:justify-center lg:justify-start py-3 w-full text-left rounded-lg ${
           isActive 
-            ? 'text-sky-200 bg-sky-900/80' 
-            : 'text-zinc-400 hover:text-zinc-200 bg-zinc-950 hover:bg-zinc-800'
+            ? 'text-sky-700 bg-sky-100 dark:text-sky-200 dark:bg-sky-900/80' 
+            : 'text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:bg-zinc-950 dark:hover:bg-zinc-800'
         }`}
       >
         <Icon className="mx-2 lg:mx-4" size={iconSize} />

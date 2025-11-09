@@ -33,7 +33,7 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
   };
 
   return (
-    <div className="flex min-h-screen w-screen p-4 bg-zinc-900">
+    <div className="flex min-h-screen w-screen p-4 bg-gray-100 dark:bg-zinc-900">
       <aside>
         <Navbar 
           currentPage={currentPage} 

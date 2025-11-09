@@ -24,9 +24,9 @@ export default function Desk({ heightPresets = [], isConnected, setIsConnected, 
 
 function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight }) {
   return (
-    <div className="flex flex-col bg-zinc-800 border-2 border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
+    <div className="flex flex-col bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
       <div className="flex justify-between md:justify-center items-center">
-        <h2 className="font-bold text-2xl text-zinc-200">Desk</h2>
+        <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Desk</h2>
         <div className="md:hidden">
           <ButtonConnectToDesk
             isConnected={isConnected}
@@ -35,7 +35,7 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
           />
         </div>
       </div>
-      <div className="border-t border-zinc-600" />
+      <div className="border-t border-gray-300 dark:border-zinc-600" />
       <DeskStatus isConnected={isConnected} currentHeight={currentHeight} heightPresets={heightPresets} />
       <DeskControls isConnected={isConnected} setIsConnected={setIsConnected} heightPresets={heightPresets} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} />
     </div>
@@ -50,11 +50,11 @@ function ConnectionStatus({ isConnected, deskName = "Smart Desk" }) {
         }`}
       />
       {isConnected ? (
-        <h2 className="font-medium text-2xl text-zinc-400">
+        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
           Connected to {deskName}
         </h2>
       ) : (
-        <h2 className="font-medium text-2xl text-zinc-400">
+        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
           Connect to a desk...
         </h2>
       )}
@@ -82,8 +82,8 @@ function DeskStatus({ isConnected, currentHeight, heightPresets }) {
   
   return (
     <div className="text-center mb-8">
-      <h2 className="font-bold text-2xl text-zinc-200 -mb-3">Status</h2>
-      <p className="font-medium text-zinc-400 mt-4">
+      <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200 -mb-3">Status</h2>
+      <p className="font-medium text-gray-700 dark:text-zinc-400 mt-4">
         {isConnected ? `Height: ${heightInCm} cm | Mode: ${mode}` : "Not connected"}
       </p>
     </div>
@@ -93,7 +93,7 @@ function DeskStatus({ isConnected, currentHeight, heightPresets }) {
 function DeskControls({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight }) {
   return (
     <div className="flex flex-col justify-center items-center text-center">
-      <h1 className="font-bold text-2xl text-zinc-200">Controls</h1>
+      <h1 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Controls</h1>
       <div className="flex flex-row justify-center gap-16 mt-6">
         <ButtonsMoveDesk isConnected={isConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} />
         <div className="hidden md:block">
@@ -127,7 +127,7 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, size = 196 }) {
 
 function ButtonsMoveDesk({ isConnected, currentHeight, setCurrentHeight }) {
   return (
-    <div className="flex flex-col gap-4 items-center py-2 border-2 border-zinc-600 rounded-full">
+    <div className="flex flex-col gap-4 items-center py-2 border-2 border-gray-300 dark:border-zinc-600 rounded-full">
       <ButtonMoveDesk direction="Up" icon={ArrowUp} disabled={!isConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} />
       <ButtonMoveDesk
         direction="Down"
@@ -142,7 +142,7 @@ function ButtonsMoveDesk({ isConnected, currentHeight, setCurrentHeight }) {
 
 function ButtonsSetMode({ isConnected, heightPresets, currentHeight, setCurrentHeight }) {
   return (
-    <div className="flex flex-col gap-4 items-center py-2 border-2 border-zinc-600 rounded-full">
+    <div className="flex flex-col gap-4 items-center py-2 border-2 border-gray-300 dark:border-zinc-600 rounded-full">
       <ButtonMoveDesk
         direction="Standing"
         icon={ArrowUpToLine}
@@ -216,7 +216,7 @@ function ButtonMoveDesk({ direction, icon = ArrowUp, disabled, heightPresets = [
 
   return (
     <button
-      className={disabled ? "p-2 text-zinc-700 cursor-not-allowed" : "p-2 text-sky-900 hover:text-sky-700 transition-colors cursor-pointer"}
+      className={disabled ? "p-2 text-gray-300 dark:text-zinc-700 cursor-not-allowed" : "p-2 text-sky-700 hover:text-sky-900 dark:text-sky-900 dark:hover:text-sky-700 transition-colors cursor-pointer"}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
