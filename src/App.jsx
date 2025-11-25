@@ -8,6 +8,7 @@ import AboutUs from './components/pages/AboutUs.jsx'
 import Settings from './components/pages/Settings.jsx'
 import Profile from './components/pages/Profile.jsx'
 import Layout from './components/layout/Layout.jsx'
+import { AuthProvider } from './contexts/AuthContext.jsx'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('Home')
@@ -32,9 +33,11 @@ function App() {
   }
 
   return (
-    <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-      {renderPage()}
-    </Layout>
+    <AuthProvider>
+      <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+        {renderPage()}
+      </Layout>
+    </AuthProvider>
   )
 }
 

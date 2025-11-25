@@ -1,19 +1,57 @@
-import { useState } from "react";
-import { Camera, Mail, User, Briefcase, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Camera, Mail, User, Briefcase, Calendar, LogOut } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import Auth from "../Auth";
 
 export default function Profile() {
+  const { user, loading, signOut, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    occupation: "Software Developer",
-    joinDate: "January 2025",
+    name: "",
+    email: "",
+    occupation: "",
+    joinDate: "",
   });
   const [editedData, setEditedData] = useState(profileData);
 
-  const handleSave = () => {
-    setProfileData(editedData);
-    setIsEditing(false);
+  useEffect(() => {
+    if (user) {
+      const joinDate = new Date(user.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      const userData = {
+        name: user.user_metadata?.full_name || user.email?.split('@')[0] || "User",
+        email: user.email || "",
+        occupation: user.user_metadata?.occupation || "",
+        joinDate: joinDate,
+      };
+      
+      setProfileData(userData);
+      setEditedData(userData);
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const { error } = await updateProfile({
+        full_name: editedData.name,
+        occupation: editedData.occupation,
+      });
+      
+      if (error) throw error;
+      
+      setProfileData(editedData);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -21,9 +59,37 @@ export default function Profile() {
     setIsEditing(false);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-zinc-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
+
   return (
     <div className="space-y-6">
-      <h1 className="font-semibold text-4xl text-gray-900 dark:text-zinc-200">Profile</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="font-semibold text-4xl text-gray-900 dark:text-zinc-200">Profile</h1>
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+        >
+          <LogOut size={20} />
+          Sign Out
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
@@ -85,13 +151,15 @@ export default function Profile() {
                 <div className="flex gap-2">
                   <button
                     onClick={handleSave}
-                    className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white dark:text-zinc-200 rounded-lg transition-colors"
+                    disabled={saving}
+                    className="px-4 py-2 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-400 text-white dark:text-zinc-200 rounded-lg transition-colors"
                   >
-                    Save
+                    {saving ? 'Saving...' : 'Save'}
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white dark:bg-zinc-600 dark:hover:bg-zinc-500 dark:text-zinc-200 rounded-lg transition-colors"
+                    disabled={saving}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-500 disabled:bg-gray-400 text-white dark:bg-zinc-600 dark:hover:bg-zinc-500 dark:text-zinc-200 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
