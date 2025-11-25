@@ -18,11 +18,14 @@ function App() {
   ])
   const [isConnected, setIsConnected] = useState(false)
   const [currentHeight, setCurrentHeight] = useState(750)
+  const [deskId, setDeskId] = useState(null)
+  const [deskName, setDeskName] = useState("Smart Desk")
+  const [showDeskDialog, setShowDeskDialog] = useState(false)
 
   const renderPage = () => {
     switch(currentPage) {
       case 'Home': return <Home />
-      case 'Desk': return <Desk heightPresets={heightPresets} isConnected={isConnected} setIsConnected={setIsConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} />
+      case 'Desk': return <Desk heightPresets={heightPresets} isConnected={isConnected} setIsConnected={setIsConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} deskId={deskId} setDeskId={setDeskId} deskName={deskName} setDeskName={setDeskName} showDeskDialog={showDeskDialog} setShowDeskDialog={setShowDeskDialog} />
       case 'Reports': return <Reports />
       case 'Configuration': return <Configuration heightPresets={heightPresets} setHeightPresets={setHeightPresets} />
       case 'About us': return <AboutUs />
