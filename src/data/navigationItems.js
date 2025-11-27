@@ -1,27 +1,18 @@
-import { 
-  House, 
-  ArrowUpDown, 
-  Settings2, 
-  ChartColumn, 
-  CircleUserRound, 
-  Settings, 
-  Info
-} from "lucide-react";
+import { Home, Monitor, BarChart3, Settings, Info, CircleUserRound } from 'lucide-react';
 
 export const mainNavItems = [
-  { icon: House, label: "Home" },
-  { icon: ArrowUpDown, label: "Desk" },
-  { icon: ChartColumn, label: "Reports" },
-  { icon: Settings2, label: "Configuration" },
+  { path: '/', label: 'Home', icon: Home },
+  { path: '/desk', label: 'My Desk', icon: Monitor },
+  { path: '/reports', label: 'Reports', icon: BarChart3 },
 ];
 
 export const footerNavItems = [
-  { icon: Info, label: "About us" },
-  { icon: Settings, label: "Settings" },
+  { path: '/configuration', label: 'Configuration', icon: Settings },
+  { path: '/about', label: 'About Us', icon: Info },
 ];
 
-export const profileNavItem = { 
-  icon: CircleUserRound, 
-  label: "Profile", 
-  iconSize: 40 
+export const profileNavItem = {
+  path: '/profile',
+  label: 'Profile',
+  icon: CircleUserRound
 };

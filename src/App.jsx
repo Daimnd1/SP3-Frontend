@@ -1,47 +1,80 @@
-import { useState } from 'react'
-import './App.css'
-import Home from './components/pages/Home.jsx'
-import Desk from './components/pages/Desk.jsx'
-import Reports from './components/pages/Reports.jsx'
-import Configuration from './components/pages/Configuration.jsx'
-import AboutUs from './components/pages/AboutUs.jsx'
-import Settings from './components/pages/Settings.jsx'
-import Profile from './components/pages/Profile.jsx'
-import Layout from './components/layout/Layout.jsx'
-import { AuthProvider } from './contexts/AuthContext.jsx'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Layout from './components/layout/Layout';
+import Auth from './components/Auth';
+import Home from './components/pages/Home';
+import Desk from './components/pages/Desk';
+import Reports from './components/pages/Reports';
+import Configuration from './components/pages/Configuration';
+import Profile from './components/pages/Profile';
+import AboutUs from './components/pages/AboutUs';
+import './App.css';
 
-function App() {
-  const [currentPage, setCurrentPage] = useState('Home')
-  const [heightPresets, setHeightPresets] = useState([
-    { id: 1, name: "Sitting", height: 720, unit: "mm" },
-    { id: 2, name: "Standing", height: 1100, unit: "mm" },
-  ])
-  const [isConnected, setIsConnected] = useState(false)
-  const [currentHeight, setCurrentHeight] = useState(750)
-  const [deskId, setDeskId] = useState(null)
-  const [deskName, setDeskName] = useState("Smart Desk")
-  const [showDeskDialog, setShowDeskDialog] = useState(false)
-
-  const renderPage = () => {
-    switch(currentPage) {
-      case 'Home': return <Home />
-      case 'Desk': return <Desk heightPresets={heightPresets} isConnected={isConnected} setIsConnected={setIsConnected} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} deskId={deskId} setDeskId={setDeskId} deskName={deskName} setDeskName={setDeskName} showDeskDialog={showDeskDialog} setShowDeskDialog={setShowDeskDialog} />
-      case 'Reports': return <Reports />
-      case 'Configuration': return <Configuration heightPresets={heightPresets} setHeightPresets={setHeightPresets} />
-      case 'About us': return <AboutUs />
-      case 'Settings': return <Settings />
-      case 'Profile': return <Profile />
-      default: return <Home />
-    }
+// Protected Route wrapper
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
-
-  return (
-    <AuthProvider>
-      <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-        {renderPage()}
-      </Layout>
-    </AuthProvider>
-  )
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
 }
 
-export default App
+// App Routes
+function AppRoutes() {
+  const { user } = useAuth();
+
+  return (
+    <Routes>
+      {/* Public Route */}
+      <Route 
+        path="/login" 
+        element={user ? <Navigate to="/" replace /> : <Auth />} 
+      />
+
+      {/* Protected Routes */}
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/desk" element={<Desk />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/configuration" element={<Configuration />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/about" element={<AboutUs />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+export default App;

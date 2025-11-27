@@ -1,54 +1,36 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '../Navbar';
 import MobileMenuButton from '../MobileMenuButton';
 import { useClickOutside } from '../../hooks/useClickOutside';
 
-export default function Layout({ children, currentPage, setCurrentPage }) {
+export default function Layout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navRef = useRef(null);
-
-  // Close menu when clicking outside
-  useClickOutside(navRef, () => {
+  
+  const navRef = useClickOutside(() => {
     if (isMobileMenuOpen) {
       setIsMobileMenuOpen(false);
     }
   });
 
-  // Close menu when scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      if (isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isMobileMenuOpen]);
-
-  // Close menu and navigate
-  const handleSetCurrentPage = (page) => {
-    setCurrentPage(page);
-    setIsMobileMenuOpen(false);
-  };
-
   return (
-    <div className="flex min-h-screen w-screen p-4 bg-gray-100 dark:bg-zinc-900">
-      <aside>
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <div ref={navRef}>
         <Navbar 
-          currentPage={currentPage} 
-          setCurrentPage={handleSetCurrentPage}
-          navRef={navRef}
-          isOpen={isMobileMenuOpen}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
-      </aside>
-      <main className="w-full md:px-4 lg:px-16 py-8 overflow-auto">
-        {children}
-      </main>
-      <MobileMenuButton 
-        isOpen={isMobileMenuOpen} 
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-      />
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <MobileMenuButton 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
+        
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 pt-16 md:pt-8 bg-gray-50 dark:bg-gray-900">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,353 +1,301 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  ArrowUpToLine,
-  ArrowDownToLine,
-  Power,
-} from "lucide-react";
-import { getAllDesks, getDeskData, updateDeskPosition } from "../../lib/backendAPI";
+import { useState, useEffect } from 'react';
+import { Armchair, TrendingUp, MonitorUp, Wifi, WifiOff } from 'lucide-react';
+import { getDeskData, updateDeskPosition, getAllDesks } from '../../lib/backendAPI';
 
-export default function Desk({ heightPresets = [], isConnected, setIsConnected, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, showDeskDialog, setShowDeskDialog }) {
-  const [speed, setSpeed] = useState(0);
-  const [targetHeight, setTargetHeight] = useState(null);
+export default function Desk() {
+  const [connectedDesk, setConnectedDesk] = useState(null);
+  const [currentHeight, setCurrentHeight] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDeskSelection, setShowDeskSelection] = useState(false);
+  const [availableDesks, setAvailableDesks] = useState([]);
+  
+  // Load settings from localStorage
+  const [heightUnit, setHeightUnit] = useState('mm');
+  const [heightPresets, setHeightPresets] = useState({
+    sitting: 750,
+    standing: 1100
+  });
 
-  return (
-    <div className="flex flex-col gap-12 items-center pt-8 text-center">
-      <ConnectionStatus isConnected={isConnected} deskName={deskName} />
-      <DeskDashboard
-        isConnected={isConnected}
-        setIsConnected={setIsConnected}
-        heightPresets={heightPresets}
-        currentHeight={currentHeight}
-        setCurrentHeight={setCurrentHeight}
-        deskId={deskId}
-        setDeskId={setDeskId}
-        deskName={deskName}
-        setDeskName={setDeskName}
-        speed={speed}
-        setSpeed={setSpeed}
-        targetHeight={targetHeight}
-        setTargetHeight={setTargetHeight}
-        showDeskDialog={showDeskDialog}
-        setShowDeskDialog={setShowDeskDialog}
-      />
-    </div>
-  );
-}
-
-function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, speed, setSpeed, targetHeight, setTargetHeight, showDeskDialog, setShowDeskDialog }) {
+  // Load user preferences on mount
   useEffect(() => {
-    if (!isConnected || !deskId) return;
+    const savedSettings = localStorage.getItem('deskSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      if (settings.heightUnit) setHeightUnit(settings.heightUnit);
+      if (settings.sittingHeight) {
+        setHeightPresets(prev => ({ ...prev, sitting: settings.sittingHeight }));
+      }
+      if (settings.standingHeight) {
+        setHeightPresets(prev => ({ ...prev, standing: settings.standingHeight }));
+      }
+    }
+  }, []);
 
-    // Poll desk state every 500ms
+  // Convert height based on unit preference
+  const convertHeight = (heightMm) => {
+    switch (heightUnit) {
+      case 'cm':
+        return (heightMm / 10).toFixed(1);
+      case 'in':
+        return (heightMm / 25.4).toFixed(1);
+      default:
+        return Math.round(heightMm);
+    }
+  };
+
+  const getUnitLabel = () => {
+    switch (heightUnit) {
+      case 'cm': return 'cm';
+      case 'in': return 'in';
+      default: return 'mm';
+    }
+  };
+
+  // Poll desk data every 500ms when connected
+  useEffect(() => {
+    if (!connectedDesk) return;
+
     const interval = setInterval(async () => {
       try {
-        const data = await getDeskData(deskId);
-        setCurrentHeight(data.state.position_mm);
-        setSpeed(data.state.speed_mms);
+        const data = await getDeskData(connectedDesk);
+        if (data?.state?.position_mm) {
+          setCurrentHeight(data.state.position_mm);
+        }
       } catch (error) {
-        console.error("Failed to poll desk data:", error);
+        console.error('Failed to fetch desk data:', error);
       }
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isConnected, deskId, setCurrentHeight, setSpeed]);
+  }, [connectedDesk]);
 
-  return (
-    <div className="flex flex-col bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
-      <div className="flex justify-between md:justify-center items-center">
-        <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Desk</h2>
-        <div className="md:hidden flex flex-col items-center gap-2">
-          <ButtonConnectToDesk
-            isConnected={isConnected}
-            setIsConnected={setIsConnected}
-            deskId={deskId}
-            setDeskId={setDeskId}
-            setDeskName={setDeskName}
-            setCurrentHeight={setCurrentHeight}
-            showDeskDialog={showDeskDialog}
-            setShowDeskDialog={setShowDeskDialog}
-            size={32}
-          />
-          {isConnected && (
-            <button
-              onClick={() => setShowDeskDialog(true)}
-              className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 underline transition-colors"
-            >
-              Change
-            </button>
-          )}
-        </div>
-      </div>
-      <div className="border-t border-gray-300 dark:border-zinc-600" />
-      <DeskStatus isConnected={isConnected} currentHeight={currentHeight} heightPresets={heightPresets} speed={speed} />
-      <DeskControls isConnected={isConnected} setIsConnected={setIsConnected} heightPresets={heightPresets} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} deskId={deskId} setDeskId={setDeskId} setDeskName={setDeskName} targetHeight={targetHeight} setTargetHeight={setTargetHeight} showDeskDialog={showDeskDialog} setShowDeskDialog={setShowDeskDialog} />
-    </div>
-  );
-}
-function ConnectionStatus({ isConnected, deskName }) {
-  return (
-    <div className="flex justify-center items-center gap-4 text-center">
-      <div
-        className={`rounded-full w-4 h-4 ${
-          isConnected ? "bg-green-500" : "bg-red-500"
-        }`}
-      />
-      {isConnected && deskName ? (
-        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
-          Connected to {deskName}
-        </h2>
-      ) : (
-        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
-          Connect to a desk...
-        </h2>
-      )}
-    </div>
-  );
-}
-
-function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
-  // Convert mm to cm for display
-  const heightInCm = Math.round(currentHeight / 10);
-  
-  // Determine mode based on speed and current height
-  let mode;
-  if (speed > 0) {
-    mode = "Rising";
-  } else if (speed < 0) {
-    mode = "Lowering";
-  } else {
-    // Use 900mm as breakpoint between sitting and standing
-    mode = currentHeight < 900 ? "Sitting" : "Standing";
-  }
-  
-  return (
-    <div className="text-center mb-8">
-      <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200 -mb-3">Status</h2>
-      <p className="font-medium text-gray-700 dark:text-zinc-400 mt-4">
-        {isConnected ? `Height: ${heightInCm} cm | Mode: ${mode}` : "Not connected"}
-      </p>
-    </div>
-  );
-}
-
-function DeskControls({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight, deskId, setDeskId, setDeskName, targetHeight, setTargetHeight, showDeskDialog, setShowDeskDialog }) {
-  return (
-    <div className="flex flex-col justify-center items-center text-center">
-      <h1 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Controls</h1>
-      <div className="flex flex-row justify-center items-center gap-8 mt-6">
-        <ButtonSetMode
-          direction="Sitting"
-          icon={ArrowDownToLine}
-          disabled={!isConnected}
-          heightPresets={heightPresets}
-          deskId={deskId}
-          setTargetHeight={setTargetHeight}
-        />
-        <div className="hidden md:flex md:flex-col md:items-center md:gap-3">
-          <ButtonConnectToDesk
-            isConnected={isConnected}
-            setIsConnected={setIsConnected}
-            deskId={deskId}
-            setDeskId={setDeskId}
-            setDeskName={setDeskName}
-            setCurrentHeight={setCurrentHeight}
-            showDeskDialog={showDeskDialog}
-            setShowDeskDialog={setShowDeskDialog}
-            size={164}
-          />
-          {isConnected && (
-            <button
-              onClick={() => setShowDeskDialog(true)}
-              className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 underline transition-colors"
-            >
-              Change Desk
-            </button>
-          )}
-        </div>
-        <ButtonSetMode
-          direction="Standing"
-          icon={ArrowUpToLine}
-          disabled={!isConnected}
-          heightPresets={heightPresets}
-          deskId={deskId}
-          setTargetHeight={setTargetHeight}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, setDeskName, setCurrentHeight, showDeskDialog, setShowDeskDialog, size = 196 }) {
-  const [availableDesks, setAvailableDesks] = useState([]);
-  const [loadingDesks, setLoadingDesks] = useState(false);
-
-  const handleConnect = async () => {
-    if (isConnected) {
-      // Disconnect
-      setIsConnected(false);
-      setDeskId(null);
-      setDeskName("Smart Desk");
-    } else {
-      // Show desk selection dialog
-      setLoadingDesks(true);
-      try {
-        const desks = await getAllDesks();
-        if (desks && desks.length > 0) {
-          // Fetch details for all desks
-          const deskDetails = await Promise.all(
-            desks.map(async (id) => {
-              try {
-                const data = await getDeskData(id);
-                return { id, name: data.config.name, data };
-              } catch (error) {
-                console.error(`Failed to fetch desk ${id}:`, error);
-                return null;
-              }
-            })
-          );
-          setAvailableDesks(deskDetails.filter(d => d !== null));
-          setShowDeskDialog(true);
-        } else {
-          console.error("No desks available");
-        }
-      } catch (error) {
-        console.error("Failed to fetch desks:", error);
-      } finally {
-        setLoadingDesks(false);
-      }
-    }
-  };
-
-  const selectDesk = (desk) => {
-    setDeskId(desk.id);
-    setDeskName(desk.name || "Smart Desk");
-    setCurrentHeight(desk.data.state.position_mm);
-    setIsConnected(true);
-    setShowDeskDialog(false);
-    setAvailableDesks([]);
-  };
-
-  // Load desks when dialog is opened externally (via Change Desk button)
+  // Fetch initial height when desk connects
   useEffect(() => {
-    if (showDeskDialog && availableDesks.length === 0 && !loadingDesks) {
-      setLoadingDesks(true);
-      getAllDesks()
-        .then(desks => {
-          if (desks && desks.length > 0) {
-            return Promise.all(
-              desks.map(async (id) => {
-                try {
-                  const data = await getDeskData(id);
-                  return { id, name: data.config.name, data };
-                } catch (error) {
-                  console.error(`Failed to fetch desk ${id}:`, error);
-                  return null;
-                }
-              })
-            );
+    if (connectedDesk) {
+      getDeskData(connectedDesk)
+        .then(data => {
+          if (data?.state?.position_mm) {
+            setCurrentHeight(data.state.position_mm);
           }
-          return [];
         })
-        .then(deskDetails => {
-          setAvailableDesks(deskDetails.filter(d => d !== null));
-        })
-        .catch(error => {
-          console.error("Failed to fetch desks:", error);
-        })
-        .finally(() => {
-          setLoadingDesks(false);
-        });
+        .catch(error => console.error('Failed to fetch initial desk data:', error));
     }
-  }, [showDeskDialog, availableDesks.length, loadingDesks]);
+  }, [connectedDesk]);
+
+  const handleConnectDesk = async () => {
+    try {
+      setIsLoading(true);
+      const desks = await getAllDesks();
+      setAvailableDesks(desks);
+      setShowDeskSelection(true);
+    } catch (error) {
+      console.error('Failed to fetch desks:', error);
+      alert('Failed to find desks. Please check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSelectDesk = (deskId) => {
+    setConnectedDesk(deskId);
+    setShowDeskSelection(false);
+  };
+
+  const handleDisconnect = () => {
+    setConnectedDesk(null);
+    setCurrentHeight(0);
+  };
+
+  const handleSetPosition = async (mode) => {
+    if (!connectedDesk) {
+      alert('Please connect to a desk first');
+      return;
+    }
+
+    const targetHeight = heightPresets[mode];
+    setIsLoading(true);
+    
+    try {
+      await updateDeskPosition(connectedDesk, targetHeight);
+      // Height will update automatically via polling
+    } catch (error) {
+      console.error('Failed to update desk position:', error);
+      alert('Failed to adjust desk height. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <>
-      <button
-        className={`p-2 transition-all  ${
-          isConnected
-            ? "text-sky-400 drop-shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:drop-shadow-[0_0_24px_rgba(56,189,248,1)]"
-            : "text-zinc-400 hover:text-sky-400"
-        }`}
-        onClick={handleConnect}
-        disabled={loadingDesks}
-        aria-label={isConnected ? "Disconnect from desk" : "Connect to desk"}
-      >
-        <Power size={size} strokeWidth={3} />
-      </button>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">My Desk</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Control your smart standing desk</p>
+      </div>
 
-      {showDeskDialog && (
-        <DeskSelectionDialog
-          desks={availableDesks}
-          onSelect={selectDesk}
-          onClose={() => setShowDeskDialog(false)}
-          loading={loadingDesks}
-        />
-      )}
-    </>
-  );
-}
-
-function DeskSelectionDialog({ desks, onSelect, onClose, loading }) {
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-zinc-200 mb-4">Select a Desk</h2>
-        <div className="space-y-2 max-h-96 overflow-y-auto">
-          {loading ? (
-            <div className="text-center py-8 text-gray-600 dark:text-zinc-400">Loading desks...</div>
-          ) : desks.length === 0 ? (
-            <div className="text-center py-8 text-gray-600 dark:text-zinc-400">No desks available</div>
+      {/* Connection Status Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-2 border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {connectedDesk ? (
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <Wifi className="w-6 h-6 text-green-600" />
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                <WifiOff className="w-6 h-6 text-gray-400" />
+              </div>
+            )}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                {connectedDesk ? 'Connected' : 'Not Connected'}
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {connectedDesk ? `Desk ID: ${connectedDesk}` : 'Connect to your desk to start'}
+              </p>
+            </div>
+          </div>
+          
+          {connectedDesk ? (
+            <button
+              onClick={handleDisconnect}
+              className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-medium transition-colors"
+            >
+              Disconnect
+            </button>
           ) : (
-            desks.map((desk) => (
-              <button
-                key={desk.id}
-                onClick={() => onSelect(desk)}
-                className="w-full text-left p-4 rounded-lg border-2 border-gray-200 dark:border-zinc-700 hover:border-sky-500 dark:hover:border-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors"
-              >
-                <div className="font-semibold text-gray-900 dark:text-zinc-200">{desk.name}</div>
-                <div className="text-sm text-gray-600 dark:text-zinc-400 mt-1">
-                  ID: {desk.id} | Height: {Math.round(desk.data.state.position_mm / 10)} cm
-                </div>
-              </button>
-            ))
+            <button
+              onClick={handleConnectDesk}
+              disabled={isLoading}
+              className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Searching...' : 'Connect to Desk'}
+            </button>
           )}
         </div>
+      </div>
+
+      {/* Current Height Display - Shows in user's preferred unit */}
+      {connectedDesk && (
+        <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg p-8 text-center text-white">
+          <MonitorUp className="w-16 h-16 mx-auto mb-4 opacity-90" />
+          <h3 className="text-lg font-medium mb-2 opacity-90">Current Height</h3>
+          <div className="text-6xl font-bold mb-2">{convertHeight(currentHeight)}</div>
+          <p className="text-blue-100 text-lg">{getUnitLabel()}</p>
+        </div>
+      )}
+
+      {/* Preset Position Controls - Shows configured presets with units */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Sitting Position */}
         <button
-          onClick={onClose}
-          className="mt-4 w-full px-4 py-2 bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
+          onClick={() => handleSetPosition('sitting')}
+          disabled={!connectedDesk || isLoading}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed group border-2 border-transparent hover:border-orange-200"
         >
-          Cancel
+          <div className="flex flex-col items-center text-center">
+            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Armchair className="w-10 h-10 text-orange-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Sitting</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Optimal height for seated work</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-lg">
+              <span className="text-3xl font-bold text-orange-600">
+                {convertHeight(heightPresets.sitting)}
+              </span>
+              <span className="text-orange-600 font-medium">{getUnitLabel()}</span>
+            </div>
+          </div>
+        </button>
+
+        {/* Standing Position */}
+        <button
+          onClick={() => handleSetPosition('standing')}
+          disabled={!connectedDesk || isLoading}
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed group border-2 border-transparent hover:border-blue-200"
+        >
+          <div className="flex flex-col items-center text-center">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <TrendingUp className="w-10 h-10 text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Standing</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Optimal height for standing work</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg">
+              <span className="text-3xl font-bold text-blue-600">
+                {convertHeight(heightPresets.standing)}
+              </span>
+              <span className="text-blue-600 font-medium">{getUnitLabel()}</span>
+            </div>
+          </div>
         </button>
       </div>
+
+      {/* Info Card */}
+      {connectedDesk && (
+        <div className="bg-blue-50 dark:bg-gray-800 border border-blue-200 dark:border-gray-700 rounded-xl p-6">
+          <div className="flex gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-blue-600 font-bold">i</span>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold text-blue-900 dark:text-gray-100 mb-1">Quick Tips</h4>
+              <ul className="text-sm text-blue-800 dark:text-gray-400 space-y-1">
+                <li>• Switch positions every 30-60 minutes for best results</li>
+                <li>• Adjust preset heights in Configuration if needed</li>
+                <li>• The desk will move smoothly to your selected position</li>
+                <li>• Current display unit: {heightUnit === 'mm' ? 'Millimeters' : heightUnit === 'cm' ? 'Centimeters' : 'Inches'}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desk Selection Dialog */}
+      {showDeskSelection && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-md w-full">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Select Your Desk</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">Choose from available desks nearby</p>
+            
+            <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
+              {availableDesks.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <WifiOff className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No desks found</p>
+                </div>
+              ) : (
+                availableDesks.map((desk) => (
+                  <button
+                    key={desk.id}
+                    onClick={() => handleSelectDesk(desk.id)}
+                    className="w-full p-4 text-left rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 transition-all group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600">
+                          Desk {desk.id}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">Click to connect</div>
+                      </div>
+                      <Wifi className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowDeskSelection(false)}
+              className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-medium transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  );
-}
-
-function ButtonSetMode({ direction, icon, disabled, heightPresets, deskId, setTargetHeight }) {
-  const Icon = icon;
-
-  const handleClick = async () => {
-    if (disabled || !deskId) return;
-
-    const preset = heightPresets.find(p => p.name === direction);
-    if (preset) {
-      try {
-        await updateDeskPosition(deskId, preset.height);
-        setTargetHeight(preset.height);
-      } catch (error) {
-        console.error(`Failed to set ${direction} position:`, error);
-      }
-    }
-  };
-
-  return (
-    <button
-      className={disabled ? "p-2 text-gray-300 dark:text-zinc-700 cursor-not-allowed border-2 border-gray-300 dark:border-zinc-600 rounded-full" : "p-2 text-sky-700 hover:text-sky-900 dark:text-sky-900 dark:hover:text-sky-700 transition-colors cursor-pointer border-2 border-gray-300 dark:border-zinc-600 rounded-full hover:border-sky-600 dark:hover:border-sky-700"}
-      onClick={handleClick}
-      disabled={disabled}
-      aria-label={`Set desk to ${direction} position`}
-    >
-      <Icon size={64} strokeWidth={3} />
-    </button>
   );
 }

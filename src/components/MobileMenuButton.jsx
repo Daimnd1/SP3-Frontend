@@ -1,16 +1,16 @@
-import { Menu, X } from "lucide-react";
+import { Menu, X } from 'lucide-react';
 
-export default function MobileMenuButton({ isOpen, onClick }) {
+export default function MobileMenuButton({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   return (
-    <button 
-      className="fixed top-6 right-6 md:hidden z-50" 
-      onClick={onClick}
-      aria-label={isOpen ? "Close menu" : "Open menu"}
+    <button
+      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      aria-label="Toggle menu"
     >
-      {isOpen ? (
-        <X className="w-8 h-8 text-gray-700 dark:text-zinc-400" />
+      {isMobileMenuOpen ? (
+        <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
       ) : (
-        <Menu className="w-8 h-8 text-gray-700 dark:text-zinc-400" />
+        <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
       )}
     </button>
   );
