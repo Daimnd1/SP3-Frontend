@@ -224,55 +224,12 @@ updateDeskPosition(deskId, targetHeight) // POST /api/desks/:id/state
 
 ## Development Guidelines
 
-### Adding a New Page
-
-1. Create component in `src/components/pages/`
-2. Import in `App.jsx`
-3. Add case to `renderPage()` switch statement
-4. Add navigation item to `src/data/navigationItems.js`
-
 ### Styling Conventions
 
 - Use Tailwind utility classes
 - Dark mode: `dark:` prefix
-- Color scheme: Sky blue (`sky-600`) for primary actions
+- Color scheme: Sky blue (`sky-600`) for primary actions, Zinc for background and other elements
 - Consistent spacing: `gap-6`, `p-6`, `mb-8`
-
-### State Updates
-
-- Timer state: Use PostureTimerContext hooks
-- Desk state: Props passed from App.jsx
-- Local UI state: Component-level useState
-
-### Best Practices
-
-1. **Props Drilling**: Minimize by using Context API for global state
-2. **Performance**: Use `useEffect` cleanup functions for intervals/listeners
-3. **Accessibility**: Include ARIA labels on interactive elements
-4. **Responsiveness**: Test on mobile (320px+) and desktop (1920px+)
-5. **Error Handling**: Always wrap API calls in try-catch blocks
-
-### Testing Reminders
-
-Use test intervals in Configuration:
-- 5 seconds: Quick testing
-- 10 seconds: Slightly longer testing
-- Then switch to real intervals (30-90 minutes)
-
-### Debugging Tips
-
-- **Timer not updating**: Check if `isTracking` is true in PostureTimerContext
-- **Reminders not showing**: Verify `shouldShowReminder()` logic and frequency settings
-- **Desk not connecting**: Check backend API availability and CORS settings
-- **Mode not changing**: Ensure desk crosses 90cm threshold while stationary (speed = 0)
-
-## Contributing
-
-1. Create a feature branch from `main`
-2. Make your changes
-3. Test thoroughly (especially timer and reminder features)
-4. Commit with clear messages
-5. Push and create a pull request
 
 ## License
 
