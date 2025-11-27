@@ -5,6 +5,7 @@ import {
   Power,
 } from "lucide-react";
 import { getAllDesks, getDeskData, updateDeskPosition } from "../../lib/backendAPI";
+import { usePostureTimer } from "../../contexts/PostureTimerContext";
 
 export default function Desk({ heightPresets = [], isConnected, setIsConnected, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, showDeskDialog, setShowDeskDialog }) {
   const [speed, setSpeed] = useState(0);
@@ -35,6 +36,9 @@ export default function Desk({ heightPresets = [], isConnected, setIsConnected, 
 }
 
 function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, speed, setSpeed, targetHeight, setTargetHeight, showDeskDialog, setShowDeskDialog }) {
+  const { startTracking, stopTracking, changeMode, isTracking, currentMode: timerMode } = usePostureTimer();
+  const prevModeRef = useRef(null);
+
   useEffect(() => {
     if (!isConnected || !deskId) return;
 
@@ -51,6 +55,36 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
 
     return () => clearInterval(interval);
   }, [isConnected, deskId, setCurrentHeight, setSpeed]);
+
+  // Start tracking when connected and height is available (only if not already tracking)
+  useEffect(() => {
+    if (isConnected && deskId && currentHeight > 0 && !isTracking) {
+      const initialMode = currentHeight < 900 ? 'sitting' : 'standing';
+      startTracking(initialMode);
+      prevModeRef.current = initialMode;
+    } else if (!isConnected && isTracking) {
+      stopTracking();
+      prevModeRef.current = null;
+    }
+  }, [isConnected, deskId, currentHeight, isTracking, startTracking, stopTracking]);
+
+  // Update prevModeRef when component mounts if already tracking
+  useEffect(() => {
+    if (isTracking && timerMode && prevModeRef.current === null) {
+      prevModeRef.current = timerMode;
+    }
+  }, [isTracking, timerMode]);
+
+  // Detect mode changes and update timer
+  useEffect(() => {
+    if (!isConnected || speed !== 0 || !isTracking) return; // Only check when desk is stationary and tracking
+
+    const currentMode = currentHeight < 900 ? 'sitting' : 'standing';
+    if (prevModeRef.current !== null && currentMode !== prevModeRef.current) {
+      changeMode(currentMode);
+      prevModeRef.current = currentMode;
+    }
+  }, [currentHeight, speed, isConnected, isTracking, changeMode]);
 
   return (
     <div className="flex flex-col bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
@@ -106,6 +140,7 @@ function ConnectionStatus({ isConnected, deskName }) {
 }
 
 function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
+  const { currentMode, timeInCurrentMode, formatTime, isTracking } = usePostureTimer();
   // Convert mm to cm for display
   const heightInCm = Math.round(currentHeight / 10);
   
@@ -124,7 +159,16 @@ function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
     <div className="text-center mb-8">
       <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200 -mb-3">Status</h2>
       <p className="font-medium text-gray-700 dark:text-zinc-400 mt-4">
-        {isConnected ? `Height: ${heightInCm} cm | Mode: ${mode}` : "Not connected"}
+        {isConnected ? (
+          <>
+            Height: <span className="text-gray-900 dark:text-zinc-200">{heightInCm} cm</span> | Mode: <span className="text-gray-900 dark:text-zinc-200">{mode}</span>
+            {isTracking && currentMode && (
+              <> | Time: <span className="text-gray-900 dark:text-zinc-200">{formatTime(timeInCurrentMode)}</span></>
+            )}
+          </>
+        ) : (
+          "Not connected"
+        )}
       </p>
     </div>
   );

@@ -1,28 +1,9 @@
 import { useState } from "react";
+import { usePostureTimer } from "../../contexts/PostureTimerContext";
 
 export default function Configuration({ heightPresets, setHeightPresets }) {
-  const [apiConfig, setApiConfig] = useState({
-    baseUrl: "http://localhost:8000",
-    apiKey: "",
-    deskId: "",
-  });
-
-  const [reminderSettings, setReminderSettings] = useState({
-    enabled: true,
-    frequency: 45,
-    sound: true,
-    message: "Time to change your posture!",
-  });
-
-  const [connectionStatus, setConnectionStatus] = useState("disconnected"); // disconnected, connecting, connected
-
-  const handleTestConnection = async () => {
-    setConnectionStatus("connecting");
-    // Simulate API call
-    setTimeout(() => {
-      setConnectionStatus("connected");
-    }, 1500);
-  };
+  const { sittingReminder, standingReminder, setSittingReminder, setStandingReminder } = usePostureTimer();
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   const handleSavePreset = (preset) => {
     setHeightPresets(
@@ -35,58 +16,14 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
       <h1 className="font-semibold text-4xl text-gray-900 dark:text-zinc-200">Configuration</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Desk Connection */}
-        <ConfigSection title="Desk Connection">
-          <div className="space-y-4">
-            <InputField
-              label="API Base URL"
-              value={apiConfig.baseUrl}
-              onChange={(e) =>
-                setApiConfig({ ...apiConfig, baseUrl: e.target.value })
-              }
-              placeholder="http://localhost:8000"
-            />
-            <InputField
-              label="API Key"
-              value={apiConfig.apiKey}
-              onChange={(e) =>
-                setApiConfig({ ...apiConfig, apiKey: e.target.value })
-              }
-              placeholder="Enter your API key"
-              type="password"
-            />
-            <InputField
-              label="Desk ID"
-              value={apiConfig.deskId}
-              onChange={(e) =>
-                setApiConfig({ ...apiConfig, deskId: e.target.value })
-              }
-              placeholder="cd:fb:1a:53:fb:e6"
-            />
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleTestConnection}
-                className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white dark:text-zinc-200 font-semibold rounded-lg transition-colors"
-                disabled={connectionStatus === "connecting"}
-              >
-                {connectionStatus === "connecting"
-                  ? "Testing..."
-                  : "Test Connection"}
-              </button>
-              <ConnectionStatus status={connectionStatus} />
-            </div>
-          </div>
-        </ConfigSection>
-
-        {/* Posture Reminders */}
-        <ConfigSection title="Posture Reminders">
+        {/* Sitting Reminder */}
+        <ConfigSection title="Sitting Reminder">
           <div className="flex flex-col gap-2">
             <ToggleSwitch
-              label="Enable Reminders"
-              checked={reminderSettings.enabled}
+              label="Enable Reminder"
+              checked={sittingReminder.enabled}
               onChange={(checked) =>
-                setReminderSettings({ ...reminderSettings, enabled: checked })
+                setSittingReminder({ ...sittingReminder, enabled: checked })
               }
             />
 
@@ -95,36 +32,78 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
                 Reminder Frequency (minutes)
               </label>
               <select
-                value={reminderSettings.frequency}
+                value={sittingReminder.frequency}
                 onChange={(e) =>
-                  setReminderSettings({
-                    ...reminderSettings,
+                  setSittingReminder({
+                    ...sittingReminder,
                     frequency: Number(e.target.value),
                   })
                 }
                 className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
               >
-                <option value={30}>30 minutes</option>
-                <option value={45}>45 minutes</option>
-                <option value={60}>60 minutes</option>
-                <option value={90}>90 minutes</option>
+                <option value={5000}>5 seconds (test)</option>
+                <option value={10000}>10 seconds (test)</option>
+                <option value={1800000}>30 minutes</option>
+                <option value={2700000}>45 minutes</option>
+                <option value={3600000}>60 minutes</option>
+                <option value={5400000}>90 minutes</option>
               </select>
             </div>
 
+            <InputField
+              label="Reminder Message"
+              value={sittingReminder.message}
+              onChange={(e) =>
+                setSittingReminder({
+                  ...sittingReminder,
+                  message: e.target.value,
+                })
+              }
+              placeholder="Enter custom reminder message"
+            />
+          </div>
+        </ConfigSection>
+
+        {/* Standing Reminder */}
+        <ConfigSection title="Standing Reminder">
+          <div className="flex flex-col gap-2">
             <ToggleSwitch
-              label="Sound Notification"
-              checked={reminderSettings.sound}
+              label="Enable Reminder"
+              checked={standingReminder.enabled}
               onChange={(checked) =>
-                setReminderSettings({ ...reminderSettings, sound: checked })
+                setStandingReminder({ ...standingReminder, enabled: checked })
               }
             />
 
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-400 mb-2">
+                Reminder Frequency (minutes)
+              </label>
+              <select
+                value={standingReminder.frequency}
+                onChange={(e) =>
+                  setStandingReminder({
+                    ...standingReminder,
+                    frequency: Number(e.target.value),
+                  })
+                }
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              >
+                <option value={5000}>5 seconds (test)</option>
+                <option value={10000}>10 seconds (test)</option>
+                <option value={900000}>15 minutes</option>
+                <option value={1200000}>20 minutes</option>
+                <option value={1800000}>30 minutes</option>
+                <option value={2700000}>45 minutes</option>
+              </select>
+            </div>
+
             <InputField
               label="Reminder Message"
-              value={reminderSettings.message}
+              value={standingReminder.message}
               onChange={(e) =>
-                setReminderSettings({
-                  ...reminderSettings,
+                setStandingReminder({
+                  ...standingReminder,
                   message: e.target.value,
                 })
               }
@@ -148,8 +127,19 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
       </ConfigSection>
 
       {/* Save Button */}
-      <div className="flex justify-end">
-        <button className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white dark:text-zinc-200 font-semibold rounded-lg transition-colors">
+      <div className="flex justify-end items-center gap-4">
+        {showSaveConfirmation && (
+          <span className="text-green-600 dark:text-green-400 font-medium">
+            Settings saved!
+          </span>
+        )}
+        <button 
+          onClick={() => {
+            setShowSaveConfirmation(true);
+            setTimeout(() => setShowSaveConfirmation(false), 3000);
+          }}
+          className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white dark:text-zinc-200 font-semibold rounded-lg transition-colors"
+        >
           Save Configuration
         </button>
       </div>
@@ -200,23 +190,6 @@ function ToggleSwitch({ label, checked, onChange }) {
           }`}
         />
       </button>
-    </div>
-  );
-}
-
-function ConnectionStatus({ status }) {
-  const statusConfig = {
-    disconnected: { color: "bg-red-500", text: "Disconnected" },
-    connecting: { color: "bg-yellow-500", text: "Connecting..." },
-    connected: { color: "bg-green-500", text: "Connected" },
-  };
-
-  const config = statusConfig[status];
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className={`w-3 h-3 rounded-full ${config.color}`}></div>
-      <span className="text-sm text-gray-700 dark:text-zinc-300">{config.text}</span>
     </div>
   );
 }

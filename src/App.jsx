@@ -9,6 +9,7 @@ import Settings from './components/pages/Settings.jsx'
 import Profile from './components/pages/Profile.jsx'
 import Layout from './components/layout/Layout.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
+import { PostureTimerProvider } from './contexts/PostureTimerContext.jsx'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('Home')
@@ -37,9 +38,11 @@ function App() {
 
   return (
     <AuthProvider>
-      <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-        {renderPage()}
-      </Layout>
+      <PostureTimerProvider>
+        <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
+          {renderPage()}
+        </Layout>
+      </PostureTimerProvider>
     </AuthProvider>
   )
 }

@@ -1,4 +1,8 @@
+import { usePostureTimer } from "../../contexts/PostureTimerContext";
+
 export default function Home() {
+  const { currentMode, timeInCurrentMode, formatTime, shouldShowReminder, getCurrentReminderMessage, isTracking } = usePostureTimer();
+
   return (
     <div className="flex flex-col gap-12 items-center pt-8">
       <GreetUser />
@@ -13,9 +17,19 @@ export default function Home() {
       <h2 className="md:self-start text-2xl text-gray-900 dark:text-zinc-200 font-semibold -mb-8">
         Posture
       </h2>
+      
       <div className="flex flex-wrap justify-center items-stretch gap-6 w-full">
-        <Card title="Tracker" text="You stood for " time="2h" />
-        <Card title="Reminder" text="Time to take a break!" />
+        <Card 
+          title="Tracker" 
+          text={isTracking && currentMode ? `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} for ` : "Not tracking - "} 
+          time={isTracking ? formatTime(timeInCurrentMode) : "Connect to desk"}
+          isTracking={isTracking}
+        />
+        <Card 
+          title="Reminder" 
+          text={shouldShowReminder() ? getCurrentReminderMessage() : isTracking ? "You're doing great!" : "Connect to desk to enable reminders"}
+          isAlert={shouldShowReminder()}
+        />
         <Card title="Goal" text="Stand up for 4 hours today!" />
       </div>
     </div>
@@ -88,21 +102,22 @@ function Card({
   title = "Card Title",
   text = "Card description goes here.",
   time = "",
+  isAlert = false,
+  isTracking = false,
 }) {
+  const bgColor = isAlert ? "bg-orange-100 dark:bg-orange-900/40" : "bg-sky-100 dark:bg-sky-900/60";
+  const borderColor = isAlert ? "bg-orange-500" : "bg-sky-500";
+
   return (
-    <div className="flex flex-wrap flex-1 bg-sky-100 dark:bg-sky-900/60 rounded-lg p-6">
+    <div className={`flex flex-wrap flex-1 ${bgColor} rounded-lg p-6 ${isAlert ? 'animate-pulse' : ''}`}>
       <div className="flex items-stretch gap-4">
-        <div className="w-1 bg-sky-500 rounded-full"></div>
+        <div className={`w-1 ${borderColor} rounded-full`}></div>
         <div className="flex-1">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-zinc-200 mb-2">{title}</h3>
           <p className="text-gray-700 dark:text-zinc-300 text-lg">
             {text}{" "}
             {time && (
-              <span
-                className={`text-2xl font-bold ${
-                  time < "2h" ? "text-sky-500" : "text-red-500"
-                }`}
-              >
+              <span className="text-2xl font-bold text-sky-600 dark:text-zinc-200">
                 {time}
               </span>
             )}
