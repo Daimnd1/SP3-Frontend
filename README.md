@@ -87,14 +87,23 @@ cd SP3-Frontend
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with the following Supabase credentials:
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=https://ztqjmmqantusgohdswqe.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0cWptbXFhbnR1c2dvaGRzd3FlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0NTQ2MTYsImV4cCI6MjA3NzAzMDYxNn0.YjrGyaQOVZut8EaiABoFokJM4fMHJZL10RhhT0X_YjQ
-```
+3. Set up Supabase credentials:
 
-> **Note**: These are the project's Supabase credentials. If you need to use a different Supabase project, update these values accordingly.
+   Create a `.env.local` file in the root directory:
+   ```env
+   # Supabase Configuration
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+   **To get these credentials:**
+   - Go to [supabase.com](https://supabase.com) and sign in
+   - Select your project (or ask a team member for access)
+   - Navigate to **Settings** → **API**
+   - Copy the **Project URL** and **anon/public key**
+   - Paste them into your `.env.local` file
+
+   > **Note**: Contact a team member if you need access to the existing Supabase project.
 
 4. Start the development server:
 ```bash
