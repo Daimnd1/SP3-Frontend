@@ -6,11 +6,11 @@ export default function Navbar({ navRef, isOpen }) {
     <nav 
       ref={navRef}
       className={`
-        fixed right-4 top-4 md:sticky md:flex 
+        fixed top-0 left-0 md:sticky md:top-4 md:flex 
         flex-col justify-between 
-        min-w-64 md:min-w-fit lg:min-w-64 
-        h-[calc(100vh-2rem)] min-h-fit 
-        px-2 py-5 rounded-2xl flex-none bg-white dark:bg-zinc-950
+        w-full md:min-w-fit lg:min-w-64 
+        h-screen md:h-[calc(100vh-2rem)] min-h-fit 
+        px-2 py-5 md:rounded-2xl flex-none bg-white dark:bg-gray-800
         shadow-lg dark:shadow-none
         z-50
         ${isOpen ? 'flex' : 'hidden md:flex'}
@@ -28,6 +28,7 @@ export default function Navbar({ navRef, isOpen }) {
       </NavSection>
 
       <NavSection>
+        <div className="border-t border-gray-300 dark:border-gray-600 my-2" />
         {footerNavItems.map((item) => (
           <NavbarItem 
             key={item.path}
@@ -36,7 +37,7 @@ export default function Navbar({ navRef, isOpen }) {
             path={item.path}
           />
         ))}
-        <div className="border-t border-zinc-800 my-2" />
+        <div className="border-t border-gray-300 dark:border-gray-600 my-2" />
         <NavbarItem 
           icon={profileNavItem.icon} 
           label={profileNavItem.label}
@@ -53,9 +54,9 @@ function NavSection({ title, children }) {
     <ul className="flex flex-col">
       {title && (
         <>
-          <h1 className="block md:hidden lg:block text-gray-900 dark:text-zinc-200">{title}</h1>
-          <h1 className="hidden md:block lg:hidden text-center font-bold text-gray-900 dark:text-zinc-200">{title[0]}</h1>
-          <div className="border-t border-gray-300 dark:border-zinc-800 my-2" />
+          <h1 className="block md:hidden lg:block text-gray-900 dark:text-gray-200">{title}</h1>
+          <h1 className="hidden md:block lg:hidden text-center font-bold text-gray-900 dark:text-gray-200">{title[0]}</h1>
+          <div className="border-t border-gray-300 dark:border-gray-600 my-5" />
         </>
       )}
       {children}
@@ -72,8 +73,8 @@ function NavbarItem({ icon, label, path, iconSize = 24 }) {
         to={path}
         className={({ isActive }) => `flex items-center justify-start md:justify-center lg:justify-start py-3 w-full text-left rounded-lg ${
           isActive 
-            ? 'text-sky-700 bg-sky-100 dark:text-sky-200 dark:bg-sky-900/80' 
-            : 'text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:bg-zinc-950 dark:hover:bg-zinc-800'
+            ? 'text-blue-700 bg-blue-100 dark:text-gray-200 dark:bg-blue-900' 
+            : 'text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'
         }`}
       >
         <Icon className="mx-2 lg:mx-4" size={iconSize} />

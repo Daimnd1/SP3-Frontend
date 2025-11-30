@@ -56,8 +56,6 @@ export function PostureTimerProvider({ children }) {
     };
   }, [isTracking]);
 
-
-
   // Change mode and reset timer
   const changeMode = (newMode) => {
     if (newMode !== currentMode) {

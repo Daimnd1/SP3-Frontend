@@ -4,20 +4,18 @@ import {
   Settings2, 
   ChartColumn, 
   CircleUserRound, 
-  Settings, 
   Info
 } from "lucide-react";
 
 export const mainNavItems = [
-  { icon: House, label: "Home", path: "/" },
-  { icon: ArrowUpDown, label: "Desk", path: "/desk" },
-  { icon: ChartColumn, label: "Reports", path: "/reports" },
-  { icon: Settings2, label: "Configuration", path: "/configuration" },
+  { icon: House, label: "Home" },
+  { icon: ArrowUpDown, label: "Desk" },
+  { icon: ChartColumn, label: "Reports" },
 ];
 
 export const footerNavItems = [
-  { icon: Info, label: "About us", path: "/about" },
-  { icon: Settings, label: "Settings", path: "/settings" },
+  { icon: Settings2, label: "Configuration" },
+  { icon: Info, label: "About us" },
 ];
 
 export const profileNavItem = { 

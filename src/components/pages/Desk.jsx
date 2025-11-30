@@ -1,13 +1,25 @@
 import { useEffect, useRef, useState } from "react";
+import { ArrowUpToLine, ArrowDownToLine, Power } from "lucide-react";
 import {
-  ArrowUpToLine,
-  ArrowDownToLine,
-  Power,
-} from "lucide-react";
-import { getAllDesks, getDeskData, updateDeskPosition } from "../../lib/backendAPI";
+  getAllDesks,
+  getDeskData,
+  updateDeskPosition,
+} from "../../lib/backendAPI";
 import { usePostureTimer } from "../../contexts/PostureTimerContext";
 
-export default function Desk({ heightPresets = [], isConnected, setIsConnected, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, showDeskDialog, setShowDeskDialog }) {
+export default function Desk({
+  heightPresets = [],
+  isConnected,
+  setIsConnected,
+  currentHeight,
+  setCurrentHeight,
+  deskId,
+  setDeskId,
+  deskName,
+  setDeskName,
+  showDeskDialog,
+  setShowDeskDialog,
+}) {
   const [speed, setSpeed] = useState(0);
   const [targetHeight, setTargetHeight] = useState(null);
 
@@ -35,8 +47,30 @@ export default function Desk({ heightPresets = [], isConnected, setIsConnected, 
   );
 }
 
-function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight, deskId, setDeskId, deskName, setDeskName, speed, setSpeed, targetHeight, setTargetHeight, showDeskDialog, setShowDeskDialog }) {
-  const { startTracking, stopTracking, changeMode, isTracking, currentMode: timerMode } = usePostureTimer();
+function DeskDashboard({
+  isConnected,
+  setIsConnected,
+  heightPresets,
+  currentHeight,
+  setCurrentHeight,
+  deskId,
+  setDeskId,
+  deskName,
+  setDeskName,
+  speed,
+  setSpeed,
+  targetHeight,
+  setTargetHeight,
+  showDeskDialog,
+  setShowDeskDialog,
+}) {
+  const {
+    startTracking,
+    stopTracking,
+    changeMode,
+    isTracking,
+    currentMode: timerMode,
+  } = usePostureTimer();
   const prevModeRef = useRef(null);
 
   useEffect(() => {
@@ -59,14 +93,21 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
   // Start tracking when connected and height is available (only if not already tracking)
   useEffect(() => {
     if (isConnected && deskId && currentHeight > 0 && !isTracking) {
-      const initialMode = currentHeight < 900 ? 'sitting' : 'standing';
+      const initialMode = currentHeight < 900 ? "sitting" : "standing";
       startTracking(initialMode);
       prevModeRef.current = initialMode;
     } else if (!isConnected && isTracking) {
       stopTracking();
       prevModeRef.current = null;
     }
-  }, [isConnected, deskId, currentHeight, isTracking, startTracking, stopTracking]);
+  }, [
+    isConnected,
+    deskId,
+    currentHeight,
+    isTracking,
+    startTracking,
+    stopTracking,
+  ]);
 
   // Update prevModeRef when component mounts if already tracking
   useEffect(() => {
@@ -79,7 +120,7 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
   useEffect(() => {
     if (!isConnected || speed !== 0 || !isTracking) return; // Only check when desk is stationary and tracking
 
-    const currentMode = currentHeight < 900 ? 'sitting' : 'standing';
+    const currentMode = currentHeight < 900 ? "sitting" : "standing";
     if (prevModeRef.current !== null && currentMode !== prevModeRef.current) {
       changeMode(currentMode);
       prevModeRef.current = currentMode;
@@ -87,9 +128,11 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
   }, [currentHeight, speed, isConnected, isTracking, changeMode]);
 
   return (
-    <div className="flex flex-col bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 w-full rounded-xl gap-4 p-8 pb-24">
+    <div className="flex flex-col bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 w-full rounded-xl gap-4 p-8 pb-24">
       <div className="flex justify-between md:justify-center items-center">
-        <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Desk</h2>
+        <h2 className="font-bold text-2xl text-gray-900 dark:text-gray-200">
+          Desk
+        </h2>
         <div className="md:hidden flex flex-col items-center gap-2">
           <ButtonConnectToDesk
             isConnected={isConnected}
@@ -105,16 +148,34 @@ function DeskDashboard({ isConnected, setIsConnected, heightPresets, currentHeig
           {isConnected && (
             <button
               onClick={() => setShowDeskDialog(true)}
-              className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 underline transition-colors"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline transition-colors"
             >
               Change
             </button>
           )}
         </div>
       </div>
-      <div className="border-t border-gray-300 dark:border-zinc-600" />
-      <DeskStatus isConnected={isConnected} currentHeight={currentHeight} heightPresets={heightPresets} speed={speed} />
-      <DeskControls isConnected={isConnected} setIsConnected={setIsConnected} heightPresets={heightPresets} currentHeight={currentHeight} setCurrentHeight={setCurrentHeight} deskId={deskId} setDeskId={setDeskId} setDeskName={setDeskName} targetHeight={targetHeight} setTargetHeight={setTargetHeight} showDeskDialog={showDeskDialog} setShowDeskDialog={setShowDeskDialog} />
+      <div className="border-t border-gray-300 dark:border-gray-600" />
+      <DeskStatus
+        isConnected={isConnected}
+        currentHeight={currentHeight}
+        heightPresets={heightPresets}
+        speed={speed}
+      />
+      <DeskControls
+        isConnected={isConnected}
+        setIsConnected={setIsConnected}
+        heightPresets={heightPresets}
+        currentHeight={currentHeight}
+        setCurrentHeight={setCurrentHeight}
+        deskId={deskId}
+        setDeskId={setDeskId}
+        setDeskName={setDeskName}
+        targetHeight={targetHeight}
+        setTargetHeight={setTargetHeight}
+        showDeskDialog={showDeskDialog}
+        setShowDeskDialog={setShowDeskDialog}
+      />
     </div>
   );
 }
@@ -127,11 +188,11 @@ function ConnectionStatus({ isConnected, deskName }) {
         }`}
       />
       {isConnected && deskName ? (
-        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
+        <h2 className="font-medium text-2xl text-gray-700 dark:text-gray-400">
           Connected to {deskName}
         </h2>
       ) : (
-        <h2 className="font-medium text-2xl text-gray-700 dark:text-zinc-400">
+        <h2 className="font-medium text-2xl text-gray-700 dark:text-gray-400">
           Connect to a desk...
         </h2>
       )}
@@ -140,10 +201,11 @@ function ConnectionStatus({ isConnected, deskName }) {
 }
 
 function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
-  const { currentMode, timeInCurrentMode, formatTime, isTracking } = usePostureTimer();
+  const { currentMode, timeInCurrentMode, formatTime, isTracking } =
+    usePostureTimer();
   // Convert mm to cm for display
   const heightInCm = Math.round(currentHeight / 10);
-  
+
   // Determine mode based on speed and current height
   let mode;
   if (speed > 0) {
@@ -154,16 +216,29 @@ function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
     // Use 900mm as breakpoint between sitting and standing
     mode = currentHeight < 900 ? "Sitting" : "Standing";
   }
-  
+
   return (
     <div className="text-center mb-8">
-      <h2 className="font-bold text-2xl text-gray-900 dark:text-zinc-200 -mb-3">Status</h2>
-      <p className="font-medium text-gray-700 dark:text-zinc-400 mt-4">
+      <h2 className="font-bold text-2xl text-gray-900 dark:text-gray-200 -mb-3">
+        Status
+      </h2>
+      <p className="font-medium text-gray-700 dark:text-gray-400 mt-4">
         {isConnected ? (
           <>
-            Height: <span className="text-gray-900 dark:text-zinc-200">{heightInCm} cm</span> | Mode: <span className="text-gray-900 dark:text-zinc-200">{mode}</span>
+            Height:{" "}
+            <span className="text-gray-900 dark:text-gray-200">
+              {heightInCm} cm
+            </span>{" "}
+            | Mode:{" "}
+            <span className="text-gray-900 dark:text-gray-200">{mode}</span>
             {isTracking && currentMode && (
-              <> | Time: <span className="text-gray-900 dark:text-zinc-200">{formatTime(timeInCurrentMode)}</span></>
+              <>
+                {" "}
+                | Time:{" "}
+                <span className="text-gray-900 dark:text-gray-200">
+                  {formatTime(timeInCurrentMode)}
+                </span>
+              </>
             )}
           </>
         ) : (
@@ -174,10 +249,25 @@ function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
   );
 }
 
-function DeskControls({ isConnected, setIsConnected, heightPresets, currentHeight, setCurrentHeight, deskId, setDeskId, setDeskName, targetHeight, setTargetHeight, showDeskDialog, setShowDeskDialog }) {
+function DeskControls({
+  isConnected,
+  setIsConnected,
+  heightPresets,
+  currentHeight,
+  setCurrentHeight,
+  deskId,
+  setDeskId,
+  setDeskName,
+  targetHeight,
+  setTargetHeight,
+  showDeskDialog,
+  setShowDeskDialog,
+}) {
   return (
     <div className="flex flex-col justify-center items-center text-center">
-      <h1 className="font-bold text-2xl text-gray-900 dark:text-zinc-200">Controls</h1>
+      <h1 className="font-bold text-2xl text-gray-900 dark:text-gray-200">
+        Controls
+      </h1>
       <div className="flex flex-row justify-center items-center gap-8 mt-6">
         <ButtonSetMode
           direction="Sitting"
@@ -202,7 +292,7 @@ function DeskControls({ isConnected, setIsConnected, heightPresets, currentHeigh
           {isConnected && (
             <button
               onClick={() => setShowDeskDialog(true)}
-              className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 underline transition-colors"
+              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline transition-colors"
             >
               Change Desk
             </button>
@@ -221,7 +311,17 @@ function DeskControls({ isConnected, setIsConnected, heightPresets, currentHeigh
   );
 }
 
-function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, setDeskName, setCurrentHeight, showDeskDialog, setShowDeskDialog, size = 196 }) {
+function ButtonConnectToDesk({
+  isConnected,
+  setIsConnected,
+  deskId,
+  setDeskId,
+  setDeskName,
+  setCurrentHeight,
+  showDeskDialog,
+  setShowDeskDialog,
+  size = 196,
+}) {
   const [availableDesks, setAvailableDesks] = useState([]);
   const [loadingDesks, setLoadingDesks] = useState(false);
 
@@ -249,7 +349,7 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, s
               }
             })
           );
-          setAvailableDesks(deskDetails.filter(d => d !== null));
+          setAvailableDesks(deskDetails.filter((d) => d !== null));
           setShowDeskDialog(true);
         } else {
           console.error("No desks available");
@@ -276,7 +376,7 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, s
     if (showDeskDialog && availableDesks.length === 0 && !loadingDesks) {
       setLoadingDesks(true);
       getAllDesks()
-        .then(desks => {
+        .then((desks) => {
           if (desks && desks.length > 0) {
             return Promise.all(
               desks.map(async (id) => {
@@ -292,10 +392,10 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, s
           }
           return [];
         })
-        .then(deskDetails => {
-          setAvailableDesks(deskDetails.filter(d => d !== null));
+        .then((deskDetails) => {
+          setAvailableDesks(deskDetails.filter((d) => d !== null));
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Failed to fetch desks:", error);
         })
         .finally(() => {
@@ -309,8 +409,8 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, s
       <button
         className={`p-2 transition-all  ${
           isConnected
-            ? "text-sky-400 drop-shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:drop-shadow-[0_0_24px_rgba(56,189,248,1)]"
-            : "text-zinc-400 hover:text-sky-400"
+            ? "text-blue-600 drop-shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:drop-shadow-[0_0_24px_rgba(56,189,248,1)]"
+            : "text-gray-400 hover:text-blue-400"
         }`}
         onClick={handleConnect}
         disabled={loadingDesks}
@@ -333,24 +433,39 @@ function ButtonConnectToDesk({ isConnected, setIsConnected, deskId, setDeskId, s
 
 function DeskSelectionDialog({ desks, onSelect, onClose, loading }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-zinc-200 mb-4">Select a Desk</h2>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-4">
+          Select a Desk
+        </h2>
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {loading ? (
-            <div className="text-center py-8 text-gray-600 dark:text-zinc-400">Loading desks...</div>
+            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+              Loading desks...
+            </div>
           ) : desks.length === 0 ? (
-            <div className="text-center py-8 text-gray-600 dark:text-zinc-400">No desks available</div>
+            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+              No desks available
+            </div>
           ) : (
             desks.map((desk) => (
               <button
                 key={desk.id}
                 onClick={() => onSelect(desk)}
-                className="w-full text-left p-4 rounded-lg border-2 border-gray-200 dark:border-zinc-700 hover:border-sky-500 dark:hover:border-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors"
+                className="w-full text-left p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >
-                <div className="font-semibold text-gray-900 dark:text-zinc-200">{desk.name}</div>
-                <div className="text-sm text-gray-600 dark:text-zinc-400 mt-1">
-                  ID: {desk.id} | Height: {Math.round(desk.data.state.position_mm / 10)} cm
+                <div className="font-semibold text-gray-900 dark:text-gray-200">
+                  {desk.name}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  ID: {desk.id} | Height:{" "}
+                  {Math.round(desk.data.state.position_mm / 10)} cm
                 </div>
               </button>
             ))
@@ -358,7 +473,7 @@ function DeskSelectionDialog({ desks, onSelect, onClose, loading }) {
         </div>
         <button
           onClick={onClose}
-          className="mt-4 w-full px-4 py-2 bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors"
+          className="mt-4 w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
         >
           Cancel
         </button>
@@ -367,13 +482,20 @@ function DeskSelectionDialog({ desks, onSelect, onClose, loading }) {
   );
 }
 
-function ButtonSetMode({ direction, icon, disabled, heightPresets, deskId, setTargetHeight }) {
+function ButtonSetMode({
+  direction,
+  icon,
+  disabled,
+  heightPresets,
+  deskId,
+  setTargetHeight,
+}) {
   const Icon = icon;
 
   const handleClick = async () => {
     if (disabled || !deskId) return;
 
-    const preset = heightPresets.find(p => p.name === direction);
+    const preset = heightPresets.find((p) => p.name === direction);
     if (preset) {
       try {
         await updateDeskPosition(deskId, preset.height);
@@ -386,7 +508,11 @@ function ButtonSetMode({ direction, icon, disabled, heightPresets, deskId, setTa
 
   return (
     <button
-      className={disabled ? "p-2 text-gray-300 dark:text-zinc-700 cursor-not-allowed border-2 border-gray-300 dark:border-zinc-600 rounded-full" : "p-2 text-sky-700 hover:text-sky-900 dark:text-sky-900 dark:hover:text-sky-700 transition-colors cursor-pointer border-2 border-gray-300 dark:border-zinc-600 rounded-full hover:border-sky-600 dark:hover:border-sky-700"}
+      className={
+        disabled
+          ? "p-2 text-gray-300 dark:text-gray-700 cursor-not-allowed border-2 border-gray-300 dark:border-gray-600 rounded-full"
+          : "p-2 text-blue-300 hover:text-blue-500 dark:text-blue-700 dark:hover:text-blue-600 transition-colors cursor-pointer border-2 border-blue-300 dark:border-blue-700 rounded-full hover:border-blue-500 dark:hover:border-blue-600"
+      }
       onClick={handleClick}
       disabled={disabled}
       aria-label={`Set desk to ${direction} position`}

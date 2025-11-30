@@ -46,20 +46,20 @@ export default function Auth() {
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-8 shadow-lg">
+        <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-8 shadow-lg">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-sky-600 rounded-full mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
               {isLogin ? (
                 <LogIn size={32} className="text-white" />
               ) : (
                 <UserPlus size={32} className="text-white" />
               )}
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-zinc-200">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-200">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
-            <p className="text-gray-600 dark:text-zinc-400 mt-2">
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
               {isLogin
                 ? 'Sign in to continue to your profile'
                 : 'Sign up to get started'}
@@ -84,12 +84,12 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Full Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User size={20} className="text-gray-400 dark:text-zinc-500" />
+                    <User size={20} className="text-gray-400 dark:text-gray-500" />
                   </div>
                   <input
                     type="text"
@@ -98,19 +98,19 @@ export default function Auth() {
                     onChange={handleChange}
                     required={!isLogin}
                     placeholder="John Doe"
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail size={20} className="text-gray-400 dark:text-zinc-500" />
+                  <Mail size={20} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type="email"
@@ -119,18 +119,18 @@ export default function Auth() {
                   onChange={handleChange}
                   required
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock size={20} className="text-gray-400 dark:text-zinc-500" />
+                  <Lock size={20} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   type="password"
@@ -140,11 +140,11 @@ export default function Auth() {
                   required
                   placeholder="••••••••"
                   minLength={6}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               {!isLogin && (
-                <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Must be at least 6 characters
                 </p>
               )}
@@ -153,7 +153,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-sky-600 hover:bg-sky-700 disabled:bg-sky-400 text-white font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-800"
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -195,7 +195,7 @@ export default function Auth() {
                 setError('');
                 setMessage('');
               }}
-              className="text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 font-medium text-sm"
+              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
             >
               {isLogin
                 ? "Don't have an account? Sign up"
