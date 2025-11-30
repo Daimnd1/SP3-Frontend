@@ -1,10 +1,7 @@
+import { NavLink, useLocation } from 'react-router-dom';
 import { mainNavItems, footerNavItems, profileNavItem } from "../data/navigationItems";
 
-export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) {
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
-  };
-
+export default function Navbar({ navRef, isOpen }) {
   return (
     <nav 
       ref={navRef}
@@ -22,11 +19,10 @@ export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) 
       <NavSection title="DeskApp">
         {mainNavItems.map((item) => (
           <NavbarItem 
-            key={item.label}
+            key={item.path}
             icon={item.icon} 
-            label={item.label} 
-            currentPage={currentPage} 
-            onNavigate={handleNavigate}
+            label={item.label}
+            path={item.path}
           />
         ))}
       </NavSection>
@@ -35,19 +31,17 @@ export default function Navbar({ currentPage, setCurrentPage, navRef, isOpen }) 
         <div className="border-t border-gray-300 dark:border-gray-600 my-2" />
         {footerNavItems.map((item) => (
           <NavbarItem 
-            key={item.label}
+            key={item.path}
             icon={item.icon} 
-            label={item.label} 
-            currentPage={currentPage} 
-            onNavigate={handleNavigate}
+            label={item.label}
+            path={item.path}
           />
         ))}
         <div className="border-t border-gray-300 dark:border-gray-600 my-2" />
         <NavbarItem 
           icon={profileNavItem.icon} 
-          label={profileNavItem.label} 
-          currentPage={currentPage} 
-          onNavigate={handleNavigate}
+          label={profileNavItem.label}
+          path={profileNavItem.path}
           iconSize={profileNavItem.iconSize}
         />
       </NavSection>
@@ -70,15 +64,14 @@ function NavSection({ title, children }) {
   );
 }
 
-function NavbarItem({ icon, label, currentPage, onNavigate, iconSize = 24 }) {
+function NavbarItem({ icon, label, path, iconSize = 24 }) {
   const Icon = icon;
-  const isActive = currentPage === label;
   
   return (
     <li>
-      <button 
-        onClick={() => onNavigate(label)}
-        className={`flex items-center justify-start md:justify-center lg:justify-start py-3 w-full text-left rounded-lg ${
+      <NavLink
+        to={path}
+        className={({ isActive }) => `flex items-center justify-start md:justify-center lg:justify-start py-3 w-full text-left rounded-lg ${
           isActive 
             ? 'text-blue-700 bg-blue-100 dark:text-gray-200 dark:bg-blue-900' 
             : 'text-gray-600 hover:text-gray-900 bg-white hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'
@@ -86,7 +79,7 @@ function NavbarItem({ icon, label, currentPage, onNavigate, iconSize = 24 }) {
       >
         <Icon className="mx-2 lg:mx-4" size={iconSize} />
         <span className="inline md:hidden lg:inline">{label}</span>
-      </button>
+      </NavLink>
     </li>
   );
 }

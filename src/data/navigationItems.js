@@ -20,6 +20,7 @@ export const footerNavItems = [
 
 export const profileNavItem = { 
   icon: CircleUserRound, 
-  label: "Profile", 
+  label: "Profile",
+  path: "/profile",
   iconSize: 40 
 };
