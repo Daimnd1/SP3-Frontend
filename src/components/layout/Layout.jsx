@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../Navbar';
 import MobileMenuButton from '../MobileMenuButton';
 import { useClickOutside } from '../../hooks/useClickOutside';
 
-export default function Layout({ children, currentPage, setCurrentPage }) {
+export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
+  const location = useLocation();
 
   // Close menu when clicking outside
   useClickOutside(navRef, () => {
@@ -13,6 +15,11 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
       setIsMobileMenuOpen(false);
     }
   });
+
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Close menu when scrolling
   useEffect(() => {
@@ -26,24 +33,16 @@ export default function Layout({ children, currentPage, setCurrentPage }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isMobileMenuOpen]);
 
-  // Close menu and navigate
-  const handleSetCurrentPage = (page) => {
-    setCurrentPage(page);
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <div className="flex min-h-screen w-screen p-4 bg-gray-100 dark:bg-zinc-900">
       <aside>
         <Navbar 
-          currentPage={currentPage} 
-          setCurrentPage={handleSetCurrentPage}
           navRef={navRef}
           isOpen={isMobileMenuOpen}
         />
       </aside>
       <main className="w-full md:px-4 lg:px-16 py-8 overflow-auto">
-        {children}
+        <Outlet />
       </main>
       <MobileMenuButton 
         isOpen={isMobileMenuOpen} 
