@@ -14,7 +14,7 @@ export default function Home() {
         alt="Person working at an ergonomic standing desk"
         buttonHref="https://www.ohow.com/2021/02/08/standing-desk-ergonomics-7-benefits-of-standing-at-work/"
       />
-      <h2 className="md:self-start text-2xl text-gray-900 dark:text-zinc-200 font-semibold -mb-8">
+      <h2 className="md:self-start text-2xl text-gray-900 dark:text-gray-200 font-semibold -mb-8">
         Posture
       </h2>
       
@@ -39,8 +39,8 @@ export default function Home() {
 function GreetUser() {
   return (
     <div className="text-center">
-      <h1 className="font-bold text-5xl text-gray-900 dark:text-zinc-200">Hi, user</h1>
-      <h2 className="font-medium text-2xl text-gray-600 dark:text-zinc-400 mt-4">
+      <h1 className="font-bold text-5xl text-gray-900 dark:text-gray-200">Hi, user</h1>
+      <h2 className="font-medium text-2xl text-gray-600 dark:text-gray-400 mt-4">
         Welcome to your smart workspace
       </h2>
     </div>
@@ -57,8 +57,8 @@ function Banner({
 }) {
   return (
     <div className="flex flex-wrap w-full rounded-lg items-center justify-center gap-8">
-      <div className="flex flex-col flex-1 min-w-[200px] max-w-146 text-gray-700 dark:text-zinc-400 font-semibold text-center md:text-left items-center md:items-start">
-        <h3 className="text-2xl text-gray-900 dark:text-zinc-200 mb-4">{title}</h3>
+      <div className="flex flex-col flex-1 min-w-[200px] max-w-146 text-gray-700 dark:text-gray-400 font-semibold text-center md:text-left items-center md:items-start">
+        <h3 className="text-2xl text-gray-900 dark:text-gray-200 mb-4">{title}</h3>
         <p className="mb-8">{text}</p>
         <Button label={buttonLabel} href={buttonHref} />
       </div>
@@ -81,7 +81,7 @@ function Button({ label, onClick, href }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`w-fit px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white dark:bg-sky-900/80 dark:hover:bg-sky-700 dark:text-zinc-200 font-semibold rounded-lg inline-block text-center`}
+        className={`w-fit px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-500 dark:text-gray-200 font-semibold rounded-lg inline-block text-center`}
       >
         {label}
       </a>
@@ -91,7 +91,7 @@ function Button({ label, onClick, href }) {
   return (
     <button
       onClick={onClick}
-      className={`w-fit px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white dark:bg-sky-900/80 dark:hover:bg-sky-700 dark:text-zinc-200 font-semibold rounded-lg`}
+      className={`w-fit px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-500 dark:text-gray-200 font-semibold rounded-lg`}
     >
       {label}
     </button>
@@ -105,19 +105,19 @@ function Card({
   isAlert = false,
   isTracking = false,
 }) {
-  const bgColor = isAlert ? "bg-orange-100 dark:bg-orange-900/40" : "bg-sky-100 dark:bg-sky-900/60";
-  const borderColor = isAlert ? "bg-orange-500" : "bg-sky-500";
+  const bgColor = isAlert ? "bg-orange-100 dark:bg-orange-900/40" : "bg-blue-100 dark:bg-blue-900/60";
+  const borderColor = isAlert ? "bg-orange-500" : "bg-blue-500";
 
   return (
     <div className={`flex flex-wrap flex-1 ${bgColor} rounded-lg p-6 ${isAlert ? 'animate-pulse' : ''}`}>
       <div className="flex items-stretch gap-4">
         <div className={`w-1 ${borderColor} rounded-full`}></div>
         <div className="flex-1">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-zinc-200 mb-2">{title}</h3>
-          <p className="text-gray-700 dark:text-zinc-300 text-lg">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-2">{title}</h3>
+          <p className="text-gray-700 dark:text-gray-300 text-lg">
             {text}{" "}
             {time && (
-              <span className="text-2xl font-bold text-sky-600 dark:text-zinc-200">
+              <span className="text-2xl font-bold text-blue-600 dark:text-gray-200">
                 {time}
               </span>
             )}

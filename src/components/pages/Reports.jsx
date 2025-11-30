@@ -242,7 +242,7 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-semibold text-4xl text-gray-900 dark:text-zinc-200">Reports</h1>
+      <h1 className="font-semibold text-4xl text-gray-900 dark:text-gray-200">Reports</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card title="Habits" items={habits} />
@@ -361,8 +361,8 @@ export default function Reports() {
 
 function ChartCard({ title, height, children }) {
   return (
-    <div className="bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-6">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-zinc-200 mb-6">{title}</h2>
+    <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-200 mb-6">{title}</h2>
       <ResponsiveContainer width="100%" height={height}>
         {children}
       </ResponsiveContainer>
@@ -389,17 +389,17 @@ function Card({ title, items }) {
   };
 
   return (
-    <div className="flex bg-sky-100 dark:bg-sky-900/60 rounded-lg p-6">
+    <div className="flex bg-blue-100 dark:bg-blue-900/60 rounded-lg p-6">
       <div className="flex items-stretch gap-4">
-        <div className="w-1 bg-sky-500 rounded-full"></div>
+        <div className="w-1 bg-blue-500 rounded-full"></div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-zinc-200">{title}</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">{title}</h3>
             {totalPages > 1 && (
               <div className="flex items-center gap-2">
                 <button
                   onClick={prevPage}
-                  className="text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                   aria-label="Previous"
                 >
                   <svg
@@ -416,12 +416,12 @@ function Card({ title, items }) {
                     />
                   </svg>
                 </button>
-                <span className="text-sm text-gray-600 dark:text-zinc-400">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   {currentPage + 1} / {totalPages}
                 </span>
                 <button
                   onClick={nextPage}
-                  className="text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                   aria-label="Next"
                 >
                   <svg
@@ -445,7 +445,7 @@ function Card({ title, items }) {
             {currentItems.map((item, index) => (
               <li
                 key={index}
-                className="text-gray-700 dark:text-zinc-300 text-base flex items-start gap-2"
+                className="text-gray-700 dark:text-gray-300 text-base flex items-start gap-2"
               >
                 <span className="text-lg shrink-0">{item.emoji}</span>
                 <span>{item.text}</span>

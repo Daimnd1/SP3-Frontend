@@ -13,7 +13,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-semibold text-4xl text-gray-900 dark:text-zinc-200">Configuration</h1>
+      <h1 className="font-semibold text-4xl text-gray-900 dark:text-gray-200">Configuration</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sitting Reminder */}
@@ -28,7 +28,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
             />
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
                 Reminder Frequency (minutes)
               </label>
               <select
@@ -39,7 +39,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
                     frequency: Number(e.target.value),
                   })
                 }
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={5000}>5 seconds (test)</option>
                 <option value={10000}>10 seconds (test)</option>
@@ -76,7 +76,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
             />
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
                 Reminder Frequency (minutes)
               </label>
               <select
@@ -87,7 +87,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
                     frequency: Number(e.target.value),
                   })
                 }
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={5000}>5 seconds (test)</option>
                 <option value={10000}>10 seconds (test)</option>
@@ -138,7 +138,7 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
             setShowSaveConfirmation(true);
             setTimeout(() => setShowSaveConfirmation(false), 3000);
           }}
-          className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white dark:text-zinc-200 font-semibold rounded-lg transition-colors"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white dark:text-gray-200 font-semibold rounded-lg transition-colors"
         >
           Save Configuration
         </button>
@@ -150,8 +150,8 @@ export default function Configuration({ heightPresets, setHeightPresets }) {
 // Reusable Components
 function ConfigSection({ title, children }) {
   return (
-    <div className="bg-white dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 rounded-lg p-6">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-zinc-200 mb-4">{title}</h2>
+    <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-200 mb-4">{title}</h2>
       {children}
     </div>
   );
@@ -160,7 +160,7 @@ function ConfigSection({ title, children }) {
 function InputField({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-zinc-400 mb-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">
         {label}
       </label>
       <input
@@ -168,7 +168,7 @@ function InputField({ label, value, onChange, placeholder, type = "text" }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded-lg text-gray-900 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
   );
@@ -177,11 +177,11 @@ function InputField({ label, value, onChange, placeholder, type = "text" }) {
 function ToggleSwitch({ label, checked, onChange }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">{label}</span>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
       <button
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          checked ? "bg-sky-600" : "bg-gray-300 dark:bg-zinc-600"
+          checked ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
         }`}
       >
         <span
@@ -210,9 +210,9 @@ function PresetCard({ preset, onSave }) {
 
   return (
     <div className="rounded-lg p-2">
-      <div className="h-0.5 w-full bg-gray-300 dark:bg-zinc-700 mb-4" />
+      <div className="h-0.5 w-full bg-gray-300 dark:bg-gray-700 mb-4" />
       <div className="flex  justify-between items-center">
-        <span className="text-gray-900 dark:text-zinc-200">
+        <span className="text-gray-900 dark:text-gray-200">
           {preset.name} ({preset.unit})
         </span>
         <div className="flex flex-wrap justify-end items-center gap-2">
@@ -222,19 +222,19 @@ function PresetCard({ preset, onSave }) {
                 type="number"
                 value={editedHeight}
                 onChange={(e) => setEditedHeight(Number(e.target.value))}
-                className="px-2 py-1 w-16 bg-gray-50 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600 rounded font-bold text-gray-900 dark:text-zinc-400 text-right focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="px-2 py-1 w-16 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded font-bold text-gray-900 dark:text-gray-400 text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
                 autoFocus
               />
               <div>
                 <button
                   onClick={handleSave}
-                  className="px-2 py-1 mr-1 bg-sky-600 hover:bg-sky-700 text-sm text-white dark:text-zinc-200 rounded transition-colors"
+                  className="px-2 py-1 mr-1 bg-blue-600 hover:bg-blue-700 text-sm text-white dark:text-gray-200 rounded transition-colors"
                 >
                   Save
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-sm text-white dark:bg-zinc-600 dark:hover:bg-zinc-500 dark:text-zinc-200 rounded transition-colors"
+                  className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-sm text-white dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 rounded transition-colors"
                 >
                   Cancel
                 </button>
@@ -242,10 +242,10 @@ function PresetCard({ preset, onSave }) {
             </>
           ) : (
             <>
-              <p className="font-bold text-gray-700 dark:text-zinc-400">{preset.height}</p>
+              <p className="font-bold text-gray-700 dark:text-gray-400">{preset.height}</p>
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white dark:bg-zinc-600 dark:hover:bg-zinc-500 dark:text-zinc-200 rounded transition-colors text-sm"
+                className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 rounded transition-colors text-sm"
               >
                 Edit
               </button>
