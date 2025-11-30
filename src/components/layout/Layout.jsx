@@ -1,12 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from '../Navbar';
 import MobileMenuButton from '../MobileMenuButton';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
-  const location = useLocation();
 
   return (
     <div className="flex min-h-screen w-screen p-4 bg-gray-100 dark:bg-gray-900">

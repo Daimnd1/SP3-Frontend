@@ -8,14 +8,14 @@ import {
 } from "lucide-react";
 
 export const mainNavItems = [
-  { icon: House, label: "Home" },
-  { icon: ArrowUpDown, label: "Desk" },
-  { icon: ChartColumn, label: "Reports" },
+  { icon: House, label: "Home", path: "/" },
+  { icon: ArrowUpDown, label: "Desk", path: "/desk" },
+  { icon: ChartColumn, label: "Reports", path: "/reports" },
 ];
 
 export const footerNavItems = [
-  { icon: Settings2, label: "Configuration" },
-  { icon: Info, label: "About us" },
+  { icon: Settings2, label: "Configuration", path: "/configuration" },
+  { icon: Info, label: "About us", path: "/about" },
 ];
 
 export const profileNavItem = { 
