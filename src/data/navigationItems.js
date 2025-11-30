@@ -9,19 +9,20 @@ import {
 } from "lucide-react";
 
 export const mainNavItems = [
-  { icon: House, label: "Home" },
-  { icon: ArrowUpDown, label: "Desk" },
-  { icon: ChartColumn, label: "Reports" },
-  { icon: Settings2, label: "Configuration" },
+  { icon: House, label: "Home", path: "/" },
+  { icon: ArrowUpDown, label: "Desk", path: "/desk" },
+  { icon: ChartColumn, label: "Reports", path: "/reports" },
+  { icon: Settings2, label: "Configuration", path: "/configuration" },
 ];
 
 export const footerNavItems = [
-  { icon: Info, label: "About us" },
-  { icon: Settings, label: "Settings" },
+  { icon: Info, label: "About us", path: "/about" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 export const profileNavItem = { 
   icon: CircleUserRound, 
-  label: "Profile", 
+  label: "Profile",
+  path: "/profile",
   iconSize: 40 
 };
