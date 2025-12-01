@@ -1,5 +1,5 @@
 // API client for communicating with the SP3 backend
-const API_BASE_URL = 'http://51.21.129.98:3000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://51.21.129.98:3000';
 
 /**
  * Generic fetch wrapper with error handling
