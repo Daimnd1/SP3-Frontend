@@ -3,3 +3,11 @@
   to = "http://51.21.129.98:3000/api/:splat"
   status = 200
   force = true
+  headers = {X-From = "Netlify"}
+
+# Health check redirect
+[[redirects]]
+  from = "/health"
+  to = "http://51.21.129.98:3000/"
+  status = 200
+  force = true
