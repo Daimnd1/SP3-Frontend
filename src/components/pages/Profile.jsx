@@ -23,7 +23,7 @@ export default function Profile() {
       });
       
       const userData = {
-        name: user.user_metadata?.full_name || user.email?.split('@')[0] || "User",
+        name: user.user_metadata?.username || user.email?.split('@')[0] || "User",
         email: user.email || "",
         occupation: user.user_metadata?.occupation || "",
         joinDate: joinDate,

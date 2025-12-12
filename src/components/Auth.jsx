@@ -27,7 +27,7 @@ export default function Auth() {
         if (error) throw error;
       } else {
         const { error } = await signUp(formData.email, formData.password, {
-          full_name: formData.name,
+          username: formData.name,
         });
         if (error) throw error;
         setMessage('Check your email for the confirmation link!');
