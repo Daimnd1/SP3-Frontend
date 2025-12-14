@@ -1,14 +1,37 @@
 import { useState } from "react";
 import { usePostureTimer } from "../../contexts/PostureTimerContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { upsertUserDeskPreset } from "../../lib/database";
 
-export default function Configuration({ heightPresets, setHeightPresets }) {
+export default function Configuration({ heightPresets, setHeightPresets, dbDeskId }) {
+  const { user } = useAuth();
   const { sittingReminder, standingReminder, setSittingReminder, setStandingReminder } = usePostureTimer();
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
-  const handleSavePreset = (preset) => {
+  const handleSavePreset = async (preset) => {
     setHeightPresets(
       heightPresets.map((p) => (p.id === preset.id ? preset : p))
     );
+
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        const sitting = heightPresets.find(p => p.name === "Sitting");
+        const standing = heightPresets.find(p => p.name === "Standing");
+        
+        const sittingHeight = preset.name === "Sitting" ? preset.height : sitting?.height || 720;
+        const standingHeight = preset.name === "Standing" ? preset.height : standing?.height || 1100;
+        
+        await upsertUserDeskPreset(
+          user.id,
+          sittingHeight,
+          standingHeight,
+          null // notification frequency - we'll add this later
+        );
+      } catch (error) {
+        console.error('Failed to save preset to database:', error);
+      }
+    }
   };
 
   return (
@@ -196,15 +219,17 @@ function ToggleSwitch({ label, checked, onChange }) {
 
 function PresetCard({ preset, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedHeight, setEditedHeight] = useState(preset.height);
+  // Display in cm (divide mm by 10)
+  const [editedHeight, setEditedHeight] = useState(Math.round(preset.height / 10));
 
   const handleSave = () => {
-    onSave({ ...preset, height: editedHeight });
+    // Convert cm back to mm for storage
+    onSave({ ...preset, height: editedHeight * 10 });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditedHeight(preset.height);
+    setEditedHeight(Math.round(preset.height / 10));
     setIsEditing(false);
   };
 
@@ -242,7 +267,7 @@ function PresetCard({ preset, onSave }) {
             </>
           ) : (
             <>
-              <p className="font-bold text-gray-700 dark:text-gray-400">{preset.height}</p>
+              <p className="font-bold text-gray-700 dark:text-gray-400">{Math.round(preset.height / 10)}</p>
               <button
                 onClick={() => setIsEditing(true)}
                 className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 rounded transition-colors text-sm"

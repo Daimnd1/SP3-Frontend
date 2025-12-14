@@ -14,14 +14,15 @@ import { PostureTimerProvider } from './contexts/PostureTimerContext.jsx'
 
 function App() {
   const [heightPresets, setHeightPresets] = useState([
-    { id: 1, name: "Sitting", height: 720, unit: "mm" },
-    { id: 2, name: "Standing", height: 1100, unit: "mm" },
+    { id: 1, name: "Sitting", height: 720, unit: "cm" },
+    { id: 2, name: "Standing", height: 1100, unit: "cm" },
   ])
   const [isConnected, setIsConnected] = useState(false)
   const [currentHeight, setCurrentHeight] = useState(750)
   const [deskId, setDeskId] = useState(null)
   const [deskName, setDeskName] = useState("Smart Desk")
   const [showDeskDialog, setShowDeskDialog] = useState(false)
+  const [dbDeskId, setDbDeskId] = useState(null)
 
   return (
     <AuthProvider>
@@ -32,7 +33,8 @@ function App() {
               <Route index element={<Home />} />
               <Route path="desk" element={
                 <Desk 
-                  heightPresets={heightPresets} 
+                  heightPresets={heightPresets}
+                  setHeightPresets={setHeightPresets}
                   isConnected={isConnected} 
                   setIsConnected={setIsConnected} 
                   currentHeight={currentHeight} 
@@ -42,14 +44,17 @@ function App() {
                   deskName={deskName} 
                   setDeskName={setDeskName} 
                   showDeskDialog={showDeskDialog} 
-                  setShowDeskDialog={setShowDeskDialog} 
+                  setShowDeskDialog={setShowDeskDialog}
+                  dbDeskId={dbDeskId}
+                  setDbDeskId={setDbDeskId}
                 />
               } />
               <Route path="reports" element={<Reports />} />
               <Route path="configuration" element={
                 <Configuration 
                   heightPresets={heightPresets} 
-                  setHeightPresets={setHeightPresets} 
+                  setHeightPresets={setHeightPresets}
+                  dbDeskId={dbDeskId}
                 />
               } />
               <Route path="about" element={<AboutUs />} />
