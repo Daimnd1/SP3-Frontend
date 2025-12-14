@@ -1,14 +1,37 @@
 import { useState } from "react";
 import { usePostureTimer } from "../../contexts/PostureTimerContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { upsertUserDeskPreset } from "../../lib/database";
 
-export default function Configuration({ heightPresets, setHeightPresets }) {
+export default function Configuration({ heightPresets, setHeightPresets, dbDeskId }) {
+  const { user } = useAuth();
   const { sittingReminder, standingReminder, setSittingReminder, setStandingReminder } = usePostureTimer();
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
-  const handleSavePreset = (preset) => {
+  const handleSavePreset = async (preset) => {
     setHeightPresets(
       heightPresets.map((p) => (p.id === preset.id ? preset : p))
     );
+
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        const sitting = heightPresets.find(p => p.name === "Sitting");
+        const standing = heightPresets.find(p => p.name === "Standing");
+        
+        const sittingHeight = preset.name === "Sitting" ? preset.height : sitting?.height || 720;
+        const standingHeight = preset.name === "Standing" ? preset.height : standing?.height || 1100;
+        
+        await upsertUserDeskPreset(
+          user.id,
+          sittingHeight,
+          standingHeight,
+          null // notification frequency - we'll add this later
+        );
+      } catch (error) {
+        console.error('Failed to save preset to database:', error);
+      }
+    }
   };
 
   return (

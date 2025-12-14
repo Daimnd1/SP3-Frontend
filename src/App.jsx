@@ -22,6 +22,7 @@ function App() {
   const [deskId, setDeskId] = useState(null)
   const [deskName, setDeskName] = useState("Smart Desk")
   const [showDeskDialog, setShowDeskDialog] = useState(false)
+  const [dbDeskId, setDbDeskId] = useState(null)
 
   return (
     <AuthProvider>
@@ -32,7 +33,8 @@ function App() {
               <Route index element={<Home />} />
               <Route path="desk" element={
                 <Desk 
-                  heightPresets={heightPresets} 
+                  heightPresets={heightPresets}
+                  setHeightPresets={setHeightPresets}
                   isConnected={isConnected} 
                   setIsConnected={setIsConnected} 
                   currentHeight={currentHeight} 
@@ -42,14 +44,17 @@ function App() {
                   deskName={deskName} 
                   setDeskName={setDeskName} 
                   showDeskDialog={showDeskDialog} 
-                  setShowDeskDialog={setShowDeskDialog} 
+                  setShowDeskDialog={setShowDeskDialog}
+                  dbDeskId={dbDeskId}
+                  setDbDeskId={setDbDeskId}
                 />
               } />
               <Route path="reports" element={<Reports />} />
               <Route path="configuration" element={
                 <Configuration 
                   heightPresets={heightPresets} 
-                  setHeightPresets={setHeightPresets} 
+                  setHeightPresets={setHeightPresets}
+                  dbDeskId={dbDeskId}
                 />
               } />
               <Route path="about" element={<AboutUs />} />

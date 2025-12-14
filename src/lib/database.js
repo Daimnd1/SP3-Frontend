@@ -307,33 +307,37 @@ export const getUserNotifications = async (userId, limit = 50) => {
 };
 
 /**
- * Get user's desk presets
+ * Get user's global desk preset
  */
-export const getUserDeskPresets = async (userId) => {
+export const getUserDeskPreset = async (userId) => {
   const { data, error } = await supabase
     .from("user_desk_presets")
     .select("*")
     .eq("user_id", userId)
-    .order("created_at", { ascending: true });
+    .maybeSingle();
 
   if (error) throw error;
-  return data || [];
+  return data;
 };
 
 /**
- * Create or update user desk preset
+ * Create or update user's global desk preset
  */
 export const upsertUserDeskPreset = async (
   userId,
-  deskHeight,
+  sittingHeight,
+  standingHeight,
   notificationFrequency
 ) => {
   const { data, error } = await supabase
     .from("user_desk_presets")
     .upsert({
       user_id: userId,
-      desk_height: deskHeight,
+      sitting_height: sittingHeight,
+      standing_height: standingHeight,
       notification_frequency: notificationFrequency,
+    }, {
+      onConflict: 'user_id'
     })
     .select()
     .single();

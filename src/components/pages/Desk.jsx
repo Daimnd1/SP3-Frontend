@@ -17,10 +17,13 @@ import {
   getUserDesks,
   getAllDesksWithStatus,
   updateDeskHeight,
+  getUserDeskPreset,
+  upsertUserDeskPreset,
 } from "../../lib/database";
 
 export default function Desk({
   heightPresets = [],
+  setHeightPresets,
   isConnected,
   setIsConnected,
   currentHeight,
@@ -31,6 +34,8 @@ export default function Desk({
   setDeskName,
   showDeskDialog,
   setShowDeskDialog,
+  dbDeskId,
+  setDbDeskId,
 }) {
   const [speed, setSpeed] = useState(0);
   const [targetHeight, setTargetHeight] = useState(null);
@@ -42,6 +47,7 @@ export default function Desk({
         isConnected={isConnected}
         setIsConnected={setIsConnected}
         heightPresets={heightPresets}
+        setHeightPresets={setHeightPresets}
         currentHeight={currentHeight}
         setCurrentHeight={setCurrentHeight}
         deskId={deskId}
@@ -54,6 +60,8 @@ export default function Desk({
         setTargetHeight={setTargetHeight}
         showDeskDialog={showDeskDialog}
         setShowDeskDialog={setShowDeskDialog}
+        dbDeskId={dbDeskId}
+        setDbDeskId={setDbDeskId}
       />
     </div>
   );
@@ -63,6 +71,7 @@ function DeskDashboard({
   isConnected,
   setIsConnected,
   heightPresets,
+  setHeightPresets,
   currentHeight,
   setCurrentHeight,
   deskId,
@@ -75,9 +84,10 @@ function DeskDashboard({
   setTargetHeight,
   showDeskDialog,
   setShowDeskDialog,
+  dbDeskId,
+  setDbDeskId,
 }) {
   const { user } = useAuth();
-  const [dbDeskId, setDbDeskId] = useState(null);
   const {
     startTracking,
     stopTracking,
@@ -135,6 +145,27 @@ function DeskDashboard({
 
     autoConnect();
   }, [user, isConnected, deskId, setDeskId, setDeskName, setIsConnected, setCurrentHeight]);
+
+  // Load presets from database when user is logged in
+  useEffect(() => {
+    const loadPresets = async () => {
+      if (!user) return;
+
+      try {
+        const preset = await getUserDeskPreset(user.id);
+        if (preset && preset.sitting_height && preset.standing_height) {
+          setHeightPresets([
+            { id: 1, name: "Sitting", height: preset.sitting_height, unit: "cm" },
+            { id: 2, name: "Standing", height: preset.standing_height, unit: "cm" },
+          ]);
+        }
+      } catch (error) {
+        console.error('Failed to load desk presets:', error);
+      }
+    };
+
+    loadPresets();
+  }, [user, setHeightPresets]);
 
   useEffect(() => {
     if (!isConnected || !deskId) return;
@@ -522,6 +553,17 @@ function ButtonConnect({
 
         // Update last connected timestamp
         await updateLastConnected(user.id, dbDesk.id);
+
+        // Create default presets if they don't exist
+        const existing = await getUserDeskPreset(user.id);
+        if (!existing) {
+          await upsertUserDeskPreset(
+            user.id,
+            720,  // Default sitting height (mm)
+            1100, // Default standing height (mm)
+            null  // Notification frequency
+          );
+        }
       } catch (error) {
         console.error('Failed to update database:', error);
       }
