@@ -196,15 +196,17 @@ function ToggleSwitch({ label, checked, onChange }) {
 
 function PresetCard({ preset, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedHeight, setEditedHeight] = useState(preset.height);
+  // Display in cm (divide mm by 10)
+  const [editedHeight, setEditedHeight] = useState(Math.round(preset.height / 10));
 
   const handleSave = () => {
-    onSave({ ...preset, height: editedHeight });
+    // Convert cm back to mm for storage
+    onSave({ ...preset, height: editedHeight * 10 });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditedHeight(preset.height);
+    setEditedHeight(Math.round(preset.height / 10));
     setIsEditing(false);
   };
 
@@ -242,7 +244,7 @@ function PresetCard({ preset, onSave }) {
             </>
           ) : (
             <>
-              <p className="font-bold text-gray-700 dark:text-gray-400">{preset.height}</p>
+              <p className="font-bold text-gray-700 dark:text-gray-400">{Math.round(preset.height / 10)}</p>
               <button
                 onClick={() => setIsEditing(true)}
                 className="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-200 rounded transition-colors text-sm"

@@ -14,8 +14,8 @@ import { PostureTimerProvider } from './contexts/PostureTimerContext.jsx'
 
 function App() {
   const [heightPresets, setHeightPresets] = useState([
-    { id: 1, name: "Sitting", height: 720, unit: "mm" },
-    { id: 2, name: "Standing", height: 1100, unit: "mm" },
+    { id: 1, name: "Sitting", height: 720, unit: "cm" },
+    { id: 2, name: "Standing", height: 1100, unit: "cm" },
   ])
   const [isConnected, setIsConnected] = useState(false)
   const [currentHeight, setCurrentHeight] = useState(750)
