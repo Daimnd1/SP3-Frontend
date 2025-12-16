@@ -22,11 +22,12 @@ export default function Configuration({ heightPresets, setHeightPresets, dbDeskI
         const sittingHeight = preset.name === "Sitting" ? preset.height : sitting?.height || 720;
         const standingHeight = preset.name === "Standing" ? preset.height : standing?.height || 1100;
         
+        // Use the current frequency from sitting reminder (they share the same frequency)
         await upsertUserDeskPreset(
           user.id,
           sittingHeight,
           standingHeight,
-          null // notification frequency - we'll add this later
+          sittingReminder.frequency
         );
       } catch (error) {
         console.error('Failed to save preset to database:', error);

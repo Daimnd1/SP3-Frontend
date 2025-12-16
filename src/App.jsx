@@ -6,7 +6,6 @@ import Desk from './components/pages/Desk.jsx'
 import Reports from './components/pages/Reports.jsx'
 import Configuration from './components/pages/Configuration.jsx'
 import AboutUs from './components/pages/AboutUs.jsx'
-import Settings from './components/pages/Settings.jsx'
 import Profile from './components/pages/Profile.jsx'
 import Layout from './components/layout/Layout.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
@@ -58,7 +57,6 @@ function App() {
                 />
               } />
               <Route path="about" element={<AboutUs />} />
-              <Route path="settings" element={<Settings />} />
               <Route path="profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

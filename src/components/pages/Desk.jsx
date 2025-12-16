@@ -37,6 +37,7 @@ export default function Desk({
   dbDeskId,
   setDbDeskId,
 }) {
+  const { updateFrequencyFromDatabase } = usePostureTimer();
   const [speed, setSpeed] = useState(0);
   const [targetHeight, setTargetHeight] = useState(null);
 
@@ -57,6 +58,7 @@ export default function Desk({
         speed={speed}
         setSpeed={setSpeed}
         targetHeight={targetHeight}
+        updateFrequencyFromDatabase={updateFrequencyFromDatabase}
         setTargetHeight={setTargetHeight}
         showDeskDialog={showDeskDialog}
         setShowDeskDialog={setShowDeskDialog}
@@ -86,6 +88,7 @@ function DeskDashboard({
   setShowDeskDialog,
   dbDeskId,
   setDbDeskId,
+  updateFrequencyFromDatabase,
 }) {
   const { user } = useAuth();
   const {
@@ -158,6 +161,11 @@ function DeskDashboard({
             { id: 1, name: "Sitting", height: preset.sitting_height, unit: "cm" },
             { id: 2, name: "Standing", height: preset.standing_height, unit: "cm" },
           ]);
+          
+          // Update notification frequency if available
+          if (preset.notification_frequency) {
+            updateFrequencyFromDatabase(preset.notification_frequency);
+          }
         }
       } catch (error) {
         console.error('Failed to load desk presets:', error);
@@ -165,7 +173,7 @@ function DeskDashboard({
     };
 
     loadPresets();
-  }, [user, setHeightPresets]);
+  }, [user, setHeightPresets, updateFrequencyFromDatabase]);
 
   useEffect(() => {
     if (!isConnected || !deskId) return;
