@@ -177,6 +177,7 @@ export function DeskProvider({ children }) {
       setSpeed(0);
       setTargetHeight(null);
       setDbDeskId(null);
+      prevModeRef.current = null;
       autoConnectAttemptedRef.current = false;
     } catch (error) {
       console.error('Failed to disconnect from desk:', error);
