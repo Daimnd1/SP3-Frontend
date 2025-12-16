@@ -10,22 +10,18 @@ import Profile from './components/pages/Profile.jsx'
 import Layout from './components/layout/Layout.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { PostureTimerProvider } from './contexts/PostureTimerContext.jsx'
+import { DeskProvider } from './contexts/DeskContext.jsx'
 
 function App() {
   const [heightPresets, setHeightPresets] = useState([
     { id: 1, name: "Sitting", height: 720, unit: "cm" },
     { id: 2, name: "Standing", height: 1100, unit: "cm" },
   ])
-  const [isConnected, setIsConnected] = useState(false)
-  const [currentHeight, setCurrentHeight] = useState(750)
-  const [deskId, setDeskId] = useState(null)
-  const [deskName, setDeskName] = useState("Smart Desk")
-  const [showDeskDialog, setShowDeskDialog] = useState(false)
-  const [dbDeskId, setDbDeskId] = useState(null)
 
   return (
     <AuthProvider>
       <PostureTimerProvider>
+        <DeskProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -34,18 +30,6 @@ function App() {
                 <Desk 
                   heightPresets={heightPresets}
                   setHeightPresets={setHeightPresets}
-                  isConnected={isConnected} 
-                  setIsConnected={setIsConnected} 
-                  currentHeight={currentHeight} 
-                  setCurrentHeight={setCurrentHeight} 
-                  deskId={deskId} 
-                  setDeskId={setDeskId} 
-                  deskName={deskName} 
-                  setDeskName={setDeskName} 
-                  showDeskDialog={showDeskDialog} 
-                  setShowDeskDialog={setShowDeskDialog}
-                  dbDeskId={dbDeskId}
-                  setDbDeskId={setDbDeskId}
                 />
               } />
               <Route path="reports" element={<Reports />} />
@@ -53,7 +37,6 @@ function App() {
                 <Configuration 
                   heightPresets={heightPresets} 
                   setHeightPresets={setHeightPresets}
-                  dbDeskId={dbDeskId}
                 />
               } />
               <Route path="about" element={<AboutUs />} />
@@ -62,6 +45,7 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        </DeskProvider>
       </PostureTimerProvider>
     </AuthProvider>
   )

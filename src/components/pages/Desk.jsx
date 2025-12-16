@@ -6,6 +6,7 @@ import {
   updateDeskPosition,
 } from "../../lib/backendAPI";
 import { usePostureTimer } from "../../contexts/PostureTimerContext";
+import { useDesk } from "../../contexts/DeskContext";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   upsertDeskByMacAddress,
@@ -24,130 +25,49 @@ import {
 export default function Desk({
   heightPresets = [],
   setHeightPresets,
-  isConnected,
-  setIsConnected,
-  currentHeight,
-  setCurrentHeight,
-  deskId,
-  setDeskId,
-  deskName,
-  setDeskName,
-  showDeskDialog,
-  setShowDeskDialog,
-  dbDeskId,
-  setDbDeskId,
 }) {
-  const { updateFrequencyFromDatabase } = usePostureTimer();
-  const [speed, setSpeed] = useState(0);
-  const [targetHeight, setTargetHeight] = useState(null);
+  const { isConnected, deskName } = useDesk();
 
   return (
     <div className="flex flex-col gap-12 items-center pt-8 text-center">
       <ConnectionStatus isConnected={isConnected} deskName={deskName} />
       <DeskDashboard
-        isConnected={isConnected}
-        setIsConnected={setIsConnected}
         heightPresets={heightPresets}
         setHeightPresets={setHeightPresets}
-        currentHeight={currentHeight}
-        setCurrentHeight={setCurrentHeight}
-        deskId={deskId}
-        setDeskId={setDeskId}
-        deskName={deskName}
-        setDeskName={setDeskName}
-        speed={speed}
-        setSpeed={setSpeed}
-        targetHeight={targetHeight}
-        updateFrequencyFromDatabase={updateFrequencyFromDatabase}
-        setTargetHeight={setTargetHeight}
-        showDeskDialog={showDeskDialog}
-        setShowDeskDialog={setShowDeskDialog}
-        dbDeskId={dbDeskId}
-        setDbDeskId={setDbDeskId}
       />
     </div>
   );
 }
 
 function DeskDashboard({
-  isConnected,
-  setIsConnected,
   heightPresets,
   setHeightPresets,
-  currentHeight,
-  setCurrentHeight,
-  deskId,
-  setDeskId,
-  deskName,
-  setDeskName,
-  speed,
-  setSpeed,
-  targetHeight,
-  setTargetHeight,
-  showDeskDialog,
-  setShowDeskDialog,
-  dbDeskId,
-  setDbDeskId,
-  updateFrequencyFromDatabase,
 }) {
   const { user } = useAuth();
+  const {
+    isConnected,
+    currentHeight,
+    speed,
+    targetHeight,
+    showDeskDialog,
+    setShowDeskDialog,
+    dbDeskId,
+    deskId,
+    deskName,
+    connectToDesk,
+    disconnectFromDesk,
+    moveDeskToHeight,
+  } = useDesk();
   const {
     startTracking,
     stopTracking,
     changeMode,
     isTracking,
     currentMode: timerMode,
+    updateFrequencyFromDatabase,
   } = usePostureTimer();
-  const prevModeRef = useRef(null);
-  const autoConnectAttemptedRef = useRef(false);
-
-  // Auto-reconnect to last connected desk on mount
-  useEffect(() => {
-    const autoConnect = async () => {
-      if (!user || isConnected || deskId || autoConnectAttemptedRef.current) return;
-      
-      autoConnectAttemptedRef.current = true;
-
-      try {
-        const lastDesk = await getLastConnectedDesk(user.id);
-        if (lastDesk && lastDesk.desk) {
-          const macAddress = lastDesk.desk.mac_address;
-          if (!macAddress) return;
-
-          // Try to connect to the desk via backend API
-          try {
-            const data = await getDeskData(macAddress);
-            
-            // Check if desk is still available (not in use by someone else)
-            if (lastDesk.desk.is_in_use && lastDesk.desk.current_user_id !== user.id) {
-              console.log('Last desk is in use by another user');
-              return;
-            }
-
-            // Reconnect
-            setDeskId(macAddress);
-            setDeskName(lastDesk.desk.name);
-            setCurrentHeight(data.state.position_mm);
-            setIsConnected(true);
-            setDbDeskId(lastDesk.desk.id);
-
-            // Update database
-            await setDeskInUse(lastDesk.desk.id, user.id);
-            await updateLastConnected(user.id, lastDesk.desk.id);
-            await updateDeskHeight(lastDesk.desk.id, data.state.position_mm);
-            
-            console.log('Auto-reconnected to last desk:', lastDesk.desk.name);
-          } catch (error) {
-            console.error('Failed to auto-reconnect to last desk:', error);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load last connected desk:', error);
-      }
-    };
-
-    autoConnect();
-  }, [user, isConnected, deskId, setDeskId, setDeskName, setIsConnected, setCurrentHeight]);
+  
+  // Mode detection moved to DeskContext for global handling
 
   // Load presets from database when user is logged in
   useEffect(() => {
@@ -175,50 +95,13 @@ function DeskDashboard({
     loadPresets();
   }, [user, setHeightPresets, updateFrequencyFromDatabase]);
 
-  useEffect(() => {
-    if (!isConnected || !deskId) return;
-
-    let lastHeight = currentHeight;
-    let wasMoving = false;
-
-    // Poll desk state every 500ms
-    const interval = setInterval(async () => {
-      try {
-        const data = await getDeskData(deskId);
-        const newHeight = data.state.position_mm;
-        const newSpeed = data.state.speed_mms;
-        
-        setCurrentHeight(newHeight);
-        setSpeed(newSpeed);
-
-        // Update database when desk stops moving and height has changed
-        if (user && dbDeskId && newSpeed === 0 && wasMoving && newHeight !== lastHeight) {
-          try {
-            await updateDeskHeight(dbDeskId, newHeight);
-            lastHeight = newHeight;
-          } catch (error) {
-            console.error('Failed to update desk height in database:', error);
-          }
-        }
-        
-        wasMoving = newSpeed !== 0;
-      } catch (error) {
-        console.error("Failed to poll desk data:", error);
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [isConnected, deskId, setCurrentHeight, setSpeed, user, dbDeskId, currentHeight]);
-
   // Start tracking when connected and height is available (only if not already tracking)
   useEffect(() => {
     if (isConnected && deskId && currentHeight > 0 && !isTracking) {
       const initialMode = currentHeight < 900 ? "sitting" : "standing";
       startTracking(initialMode);
-      prevModeRef.current = initialMode;
     } else if (!isConnected && isTracking) {
       stopTracking();
-      prevModeRef.current = null;
     }
   }, [
     isConnected,
@@ -229,24 +112,6 @@ function DeskDashboard({
     stopTracking,
   ]);
 
-  // Update prevModeRef when component mounts if already tracking
-  useEffect(() => {
-    if (isTracking && timerMode && prevModeRef.current === null) {
-      prevModeRef.current = timerMode;
-    }
-  }, [isTracking, timerMode]);
-
-  // Detect mode changes and update timer
-  useEffect(() => {
-    if (!isConnected || speed !== 0 || !isTracking) return; // Only check when desk is stationary and tracking
-
-    const currentMode = currentHeight < 900 ? "sitting" : "standing";
-    if (prevModeRef.current !== null && currentMode !== prevModeRef.current) {
-      changeMode(currentMode);
-      prevModeRef.current = currentMode;
-    }
-  }, [currentHeight, speed, isConnected, isTracking, changeMode]);
-
   return (
     <div className="flex flex-col bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 w-full rounded-xl gap-4 p-8 pb-24">
       <div className="flex justify-between md:justify-center items-center">
@@ -254,19 +119,7 @@ function DeskDashboard({
           Desk
         </h2>
         <div className="md:hidden flex flex-col items-center gap-2">
-          <ButtonConnect
-            isConnected={isConnected}
-            setIsConnected={setIsConnected}
-            deskId={deskId}
-            setDeskId={setDeskId}
-            setDeskName={setDeskName}
-            setCurrentHeight={setCurrentHeight}
-            showDeskDialog={showDeskDialog}
-            setShowDeskDialog={setShowDeskDialog}
-            dbDeskId={dbDeskId}
-            setDbDeskId={setDbDeskId}
-            size={32}
-          />
+          <ButtonConnect size={32} />
           {isConnected && (
             <button
               onClick={() => setShowDeskDialog(true)}
@@ -285,20 +138,7 @@ function DeskDashboard({
         speed={speed}
       />
       <DeskControls
-        isConnected={isConnected}
-        setIsConnected={setIsConnected}
         heightPresets={heightPresets}
-        currentHeight={currentHeight}
-        setCurrentHeight={setCurrentHeight}
-        deskId={deskId}
-        setDeskId={setDeskId}
-        setDeskName={setDeskName}
-        targetHeight={targetHeight}
-        setTargetHeight={setTargetHeight}
-        showDeskDialog={showDeskDialog}
-        setShowDeskDialog={setShowDeskDialog}
-        dbDeskId={dbDeskId}
-        setDbDeskId={setDbDeskId}
       />
     </div>
   );
@@ -374,21 +214,10 @@ function DeskStatus({ isConnected, currentHeight, heightPresets, speed }) {
 }
 
 function DeskControls({
-  isConnected,
-  setIsConnected,
   heightPresets,
-  currentHeight,
-  setCurrentHeight,
-  deskId,
-  setDeskId,
-  setDeskName,
-  targetHeight,
-  setTargetHeight,
-  showDeskDialog,
-  setShowDeskDialog,
-  dbDeskId,
-  setDbDeskId,
 }) {
+  const { isConnected, setShowDeskDialog } = useDesk();
+
   return (
     <div className="flex flex-col justify-center items-center text-center">
       <h1 className="font-bold text-2xl text-gray-900 dark:text-gray-200">
@@ -400,23 +229,9 @@ function DeskControls({
           icon={ArrowDownToLine}
           disabled={!isConnected}
           heightPresets={heightPresets}
-          deskId={deskId}
-          setTargetHeight={setTargetHeight}
         />
         <div className="hidden md:flex md:flex-col md:items-center md:gap-3">
-          <ButtonConnect
-            isConnected={isConnected}
-            setIsConnected={setIsConnected}
-            deskId={deskId}
-            setDeskId={setDeskId}
-            setDeskName={setDeskName}
-            setCurrentHeight={setCurrentHeight}
-            showDeskDialog={showDeskDialog}
-            setShowDeskDialog={setShowDeskDialog}
-            dbDeskId={dbDeskId}
-            setDbDeskId={setDbDeskId}
-            size={164}
-          />
+          <ButtonConnect size={164} />
           {isConnected && (
             <button
               onClick={() => setShowDeskDialog(true)}
@@ -431,8 +246,6 @@ function DeskControls({
           icon={ArrowUpToLine}
           disabled={!isConnected}
           heightPresets={heightPresets}
-          deskId={deskId}
-          setTargetHeight={setTargetHeight}
         />
       </div>
     </div>
@@ -440,39 +253,59 @@ function DeskControls({
 }
 
 function ButtonConnect({
-  isConnected,
-  setIsConnected,
-  deskId,
-  setDeskId,
-  setDeskName,
-  setCurrentHeight,
-  showDeskDialog,
-  setShowDeskDialog,
-  dbDeskId,
-  setDbDeskId,
   size = 196,
 }) {
   const { user } = useAuth();
+  const { isConnected, showDeskDialog, setShowDeskDialog, connectToDesk, disconnectFromDesk } = useDesk();
   const [availableDesks, setAvailableDesks] = useState([]);
   const [loadingDesks, setLoadingDesks] = useState(false);
-  const [previousDbDeskId, setPreviousDbDeskId] = useState(null);
 
   const handleConnect = async () => {
     if (isConnected) {
-      // Disconnect and update database
-      if (user && dbDeskId) {
+      // Disconnect using context
+      try {
+        await disconnectFromDesk();
+      } catch (error) {
+        console.error('Failed to disconnect:', error);
+      }
+    } else {
+      // Try to reconnect to last desk first
+      if (user) {
         try {
-          await setDeskNotInUse(dbDeskId);
+          const lastDesk = await getLastConnectedDesk(user.id);
+          if (lastDesk && lastDesk.desk) {
+            // Check if last desk is available
+            const allDesks = await getAllDesks();
+            const matchingDeskId = allDesks.find(id => {
+              // The allDesks returns mac addresses, compare with last desk's mac
+              return id === lastDesk.desk.mac_address;
+            });
+
+            if (matchingDeskId) {
+              try {
+                const data = await getDeskData(matchingDeskId);
+                // Check if desk is available (not in use by someone else)
+                if (!lastDesk.desk.is_in_use || lastDesk.desk.current_user_id === user.id) {
+                  // Connect to last desk
+                  await connectToDesk({
+                    id: matchingDeskId,
+                    name: lastDesk.desk.name || data.config.name,
+                    data: data,
+                  });
+                  console.log('Reconnected to last desk:', lastDesk.desk.name);
+                  return;
+                }
+              } catch (error) {
+                console.log('Last desk unavailable, showing desk list');
+              }
+            }
+          }
         } catch (error) {
-          console.error('Failed to update desk status:', error);
+          console.log('No last desk found, showing desk list');
         }
       }
-      setIsConnected(false);
-      setDeskId(null);
-      setDeskName("Smart Desk");
-      setDbDeskId(null);
-    } else {
-      // Show desk selection dialog
+
+      // Show desk selection dialog if no last desk or it's unavailable
       setLoadingDesks(true);
       try {
         const desks = await getAllDesks();
@@ -525,44 +358,14 @@ function ButtonConnect({
   };
 
   const selectDesk = async (desk) => {
-    // Disconnect from previous desk if switching
-    if (user && dbDeskId && dbDeskId !== desk.dbDesk?.id) {
-      try {
-        await setDeskNotInUse(dbDeskId);
-      } catch (error) {
-        console.error('Failed to free previous desk:', error);
-      }
-    }
-    
-    setDeskId(desk.id);
-    setDeskName(desk.name || "Smart Desk");
-    setCurrentHeight(desk.data.state.position_mm);
-    setIsConnected(true);
-    setShowDeskDialog(false);
-    setAvailableDesks([]);
-
-    // Update database if user is logged in
-    if (user) {
-      try {
-        // Create or get desk in database
-        const dbDesk = await upsertDeskByMacAddress(
-          desk.id,
-          desk.name || "Smart Desk",
-          desk.data.state.position_mm
-        );
-        setPreviousDbDeskId(dbDeskId);
-        setDbDeskId(dbDesk.id);
-
-        // Mark desk as in use
-        await setDeskInUse(dbDesk.id, user.id);
-
-        // Create user-desk relationship if it doesn't exist
-        await addUserDesk(user.id, dbDesk.id);
-
-        // Update last connected timestamp
-        await updateLastConnected(user.id, dbDesk.id);
-
-        // Create default presets if they don't exist
+    try {
+      // Use connectToDesk from context
+      await connectToDesk(desk);
+      setShowDeskDialog(false);
+      setAvailableDesks([]);
+      
+      // Create default presets if they don't exist
+      if (user) {
         const existing = await getUserDeskPreset(user.id);
         if (!existing) {
           await upsertUserDeskPreset(
@@ -572,9 +375,9 @@ function ButtonConnect({
             null  // Notification frequency
           );
         }
-      } catch (error) {
-        console.error('Failed to update database:', error);
       }
+    } catch (error) {
+      console.error('Failed to connect to desk:', error);
     }
   };
 
@@ -803,10 +606,9 @@ function ButtonSetMode({
   icon,
   disabled,
   heightPresets,
-  deskId,
-  setTargetHeight,
 }) {
   const Icon = icon;
+  const { deskId, moveDeskToHeight } = useDesk();
 
   const handleClick = async () => {
     if (disabled || !deskId) return;
@@ -814,8 +616,7 @@ function ButtonSetMode({
     const preset = heightPresets.find((p) => p.name === direction);
     if (preset) {
       try {
-        await updateDeskPosition(deskId, preset.height);
-        setTargetHeight(preset.height);
+        await moveDeskToHeight(preset.height);
       } catch (error) {
         console.error(`Failed to set ${direction} position:`, error);
       }

@@ -8,6 +8,7 @@ export function PostureTimerProvider({ children }) {
   const [currentMode, setCurrentMode] = useState(null); // 'sitting' or 'standing'
   const [timeInCurrentMode, setTimeInCurrentMode] = useState(0); // milliseconds
   const [isTracking, setIsTracking] = useState(false);
+  const startTimeRef = useRef(null); // Timestamp when tracking started
   const timerIntervalRef = useRef(null);
   const lastReminderTimeRef = useRef(null);
   
@@ -42,16 +43,24 @@ export function PostureTimerProvider({ children }) {
     localStorage.setItem('standingReminderSettings', JSON.stringify(standingReminder));
   }, [standingReminder]);
 
-  // Timer logic
+  // Timer logic using timestamps (works even when browser tab is inactive)
   useEffect(() => {
     if (isTracking) {
+      // Set start time when tracking begins
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
+
+      // Update time based on elapsed time since start
       timerIntervalRef.current = setInterval(() => {
-        setTimeInCurrentMode(prev => prev + 100);
+        const elapsed = Date.now() - startTimeRef.current;
+        setTimeInCurrentMode(elapsed);
       }, 100);
     } else {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
+      startTimeRef.current = null;
     }
 
     return () => {
@@ -64,8 +73,10 @@ export function PostureTimerProvider({ children }) {
   // Change mode and reset timer
   const changeMode = (newMode) => {
     if (newMode !== currentMode) {
+      console.log(`⏱️ PostureTimer: Changing mode from ${currentMode} to ${newMode}, resetting timer`);
       setCurrentMode(newMode);
       setTimeInCurrentMode(0);
+      startTimeRef.current = Date.now(); // Reset start time
     }
   };
 
@@ -73,6 +84,7 @@ export function PostureTimerProvider({ children }) {
   const startTracking = (initialMode) => {
     setCurrentMode(initialMode);
     setTimeInCurrentMode(0);
+    startTimeRef.current = Date.now(); // Set start time
     setIsTracking(true);
   };
 
@@ -81,6 +93,7 @@ export function PostureTimerProvider({ children }) {
     setIsTracking(false);
     setCurrentMode(null);
     setTimeInCurrentMode(0);
+    startTimeRef.current = null;
   };
 
   // Trigger notification when reminder time is reached
@@ -91,8 +104,8 @@ export function PostureTimerProvider({ children }) {
     
     if (!currentReminder.enabled) return;
 
-    // Check if it's time for a reminder - send once when threshold is reached
-    if (timeInCurrentMode === currentReminder.frequency && lastReminderTimeRef.current !== currentReminder.frequency) {
+    // Check if it's time for a reminder - send once when threshold is reached or exceeded
+    if (timeInCurrentMode >= currentReminder.frequency && lastReminderTimeRef.current !== currentReminder.frequency) {
       lastReminderTimeRef.current = currentReminder.frequency;
       sendPostureReminder(currentMode, currentReminder.message);
     }
