@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { useNotifications } from '../hooks/useNotifications';
 
 const PostureTimerContext = createContext();
 
@@ -8,13 +9,17 @@ export function PostureTimerProvider({ children }) {
   const [timeInCurrentMode, setTimeInCurrentMode] = useState(0); // milliseconds
   const [isTracking, setIsTracking] = useState(false);
   const timerIntervalRef = useRef(null);
+  const lastReminderTimeRef = useRef(null);
+  
+  // Notification hook
+  const { sendPostureReminder } = useNotifications();
 
   // Reminder settings - load from localStorage or use defaults
   const [sittingReminder, setSittingReminder] = useState(() => {
     const saved = localStorage.getItem('sittingReminderSettings');
     return saved ? JSON.parse(saved) : {
       enabled: true,
-      frequency: 2700000, // 45 minutes in milliseconds
+      frequency: 10000, // 10 seconds for testing (change to 2700000 for production - 45 minutes)
       message: "Time to stand up and stretch!",
     };
   });
@@ -23,7 +28,7 @@ export function PostureTimerProvider({ children }) {
     const saved = localStorage.getItem('standingReminderSettings');
     return saved ? JSON.parse(saved) : {
       enabled: true,
-      frequency: 1800000, // 30 minutes in milliseconds
+      frequency: 10000, // 10 seconds for testing (change to 1800000 for production - 30 minutes)
       message: "Time to sit down and rest!",
     };
   });
@@ -78,6 +83,26 @@ export function PostureTimerProvider({ children }) {
     setTimeInCurrentMode(0);
   };
 
+  // Trigger notification when reminder time is reached
+  useEffect(() => {
+    if (!isTracking || !currentMode) return;
+
+    const currentReminder = currentMode === 'sitting' ? sittingReminder : standingReminder;
+    
+    if (!currentReminder.enabled) return;
+
+    // Check if it's time for a reminder - send once when threshold is reached
+    if (timeInCurrentMode === currentReminder.frequency && lastReminderTimeRef.current !== currentReminder.frequency) {
+      lastReminderTimeRef.current = currentReminder.frequency;
+      sendPostureReminder(currentMode, currentReminder.message);
+    }
+  }, [timeInCurrentMode, currentMode, isTracking, sittingReminder, standingReminder, sendPostureReminder]);
+
+  // Reset reminder tracking when mode changes
+  useEffect(() => {
+    lastReminderTimeRef.current = null;
+  }, [currentMode]);
+
   // Check if reminder should be shown
   const shouldShowReminder = () => {
     if (currentMode === 'sitting' && sittingReminder.enabled) {
@@ -113,6 +138,14 @@ export function PostureTimerProvider({ children }) {
     return `${seconds}s`;
   };
 
+  // Function to update frequency from database (called by Desk.jsx)
+  const updateFrequencyFromDatabase = (frequencyMs) => {
+    if (frequencyMs) {
+      setSittingReminder(prev => ({ ...prev, frequency: frequencyMs }));
+      setStandingReminder(prev => ({ ...prev, frequency: frequencyMs }));
+    }
+  };
+
   const value = {
     currentMode,
     timeInCurrentMode,
@@ -121,6 +154,7 @@ export function PostureTimerProvider({ children }) {
     standingReminder,
     setSittingReminder,
     setStandingReminder,
+    updateFrequencyFromDatabase,
     changeMode,
     startTracking,
     stopTracking,
