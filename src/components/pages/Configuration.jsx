@@ -3,7 +3,7 @@ import { usePostureTimer } from "../../contexts/PostureTimerContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { upsertUserDeskPreset } from "../../lib/database";
 
-export default function Configuration({ heightPresets, setHeightPresets, dbDeskId }) {
+export default function Configuration({ heightPresets, setHeightPresets }) {
   const { user } = useAuth();
   const { sittingReminder, standingReminder, setSittingReminder, setStandingReminder } = usePostureTimer();
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
