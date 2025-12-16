@@ -97,15 +97,16 @@ function DeskDashboard({
 
   // Start tracking when connected and height is available (only if not already tracking)
   useEffect(() => {
-    if (isConnected && deskId && currentHeight > 0 && !isTracking) {
+    if (isConnected && deskId && currentHeight > 0 && !isTracking && dbDeskId) {
       const initialMode = currentHeight < 900 ? "sitting" : "standing";
-      startTracking(initialMode);
+      startTracking(initialMode, currentHeight, dbDeskId);
     } else if (!isConnected && isTracking) {
       stopTracking();
     }
   }, [
     isConnected,
     deskId,
+    dbDeskId,
     currentHeight,
     isTracking,
     startTracking,

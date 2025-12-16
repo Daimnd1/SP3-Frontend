@@ -10,7 +10,9 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { getWeeklyStats, msToHours, calculatePostureBalance } from "../../lib/postureAnalytics";
 
 // Shared chart styles and configurations
 const chartColors = {
@@ -36,41 +38,14 @@ const commonAxisProps = {
   interval: 0,
 };
 
-// Total time spent sitting vs standing (in hours) per day for the past week
-const postureTimeData = [
-  { day: "Mon", sitting: 5.5, standing: 2.5 },
-  { day: "Tue", sitting: 6.0, standing: 2.0 },
-  { day: "Wed", sitting: 4.5, standing: 3.5 },
-  { day: "Thu", sitting: 5.0, standing: 3.0 },
-  { day: "Fri", sitting: 5.5, standing: 2.5 },
-  { day: "Sat", sitting: 3.0, standing: 1.5 },
-  { day: "Sun", sitting: 2.5, standing: 1.0 },
-];
-
-// Frequency of posture changes per day
-const postureChangeData = [
-  { day: "Mon", changes: 12 },
-  { day: "Tue", changes: 8 },
-  { day: "Wed", changes: 15 },
-  { day: "Thu", changes: 10 },
-  { day: "Fri", changes: 9 },
-  { day: "Sat", changes: 5 },
-  { day: "Sun", changes: 4 },
-];
-
-// Average session duration (in minutes) for sitting and standing
-const sessionDurationData = [
-  { day: "Mon", avgSitting: 45, avgStanding: 25 },
-  { day: "Tue", avgSitting: 52, avgStanding: 20 },
-  { day: "Wed", avgSitting: 38, avgStanding: 30 },
-  { day: "Thu", avgSitting: 42, avgStanding: 28 },
-  { day: "Fri", avgSitting: 48, avgStanding: 22 },
-  { day: "Sat", avgSitting: 40, avgStanding: 18 },
-  { day: "Sun", avgSitting: 35, avgStanding: 15 },
-];
+// Day names for chart display
+const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // Analyze posture data to identify habits and generate tips
-function analyzePostureData() {
+function analyzePostureData(postureTimeData, postureChangeData, sessionDurationData) {
+  if (!postureTimeData.length) {
+    return { habits: [{ text: "No data yet - start tracking!", emoji: "📊" }], tips: [] };
+  }
   // Calculate averages
   const avgSittingTime =
     postureTimeData.reduce((sum, day) => sum + day.sitting, 0) /
@@ -238,7 +213,80 @@ function analyzePostureData() {
 }
 
 export default function Reports() {
-  const { habits, tips } = analyzePostureData();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [postureTimeData, setPostureTimeData] = useState([]);
+  const [postureChangeData, setPostureChangeData] = useState([]);
+  const [sessionDurationData, setSessionDurationData] = useState([]);
+
+  useEffect(() => {
+    async function loadData() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const stats = await getWeeklyStats(user.id, 7);
+
+        // Transform data for charts
+        const timeData = stats.map(day => {
+          const date = new Date(day.date);
+          return {
+            day: dayNames[date.getDay()],
+            sitting: parseFloat(msToHours(day.total_sitting_ms)),
+            standing: parseFloat(msToHours(day.total_standing_ms))
+          };
+        });
+
+        const changeData = stats.map(day => {
+          const date = new Date(day.date);
+          return {
+            day: dayNames[date.getDay()],
+            changes: day.posture_changes_count
+          };
+        });
+
+        const durationData = stats.map(day => {
+          const date = new Date(day.date);
+          return {
+            day: dayNames[date.getDay()],
+            avgSitting: Math.round((day.avg_sitting_session_ms || 0) / 60000),
+            avgStanding: Math.round((day.avg_standing_session_ms || 0) / 60000)
+          };
+        });
+
+        setPostureTimeData(timeData);
+        setPostureChangeData(changeData);
+        setSessionDurationData(durationData);
+      } catch (error) {
+        console.error('Failed to load reports data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [user]);
+
+  const { habits, tips } = analyzePostureData(postureTimeData, postureChangeData, sessionDurationData);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500 dark:text-gray-400">Loading reports...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-500 dark:text-gray-400">Please sign in to view reports</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
