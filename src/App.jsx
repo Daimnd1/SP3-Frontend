@@ -4,6 +4,7 @@ import './App.css'
 import Home from './components/pages/Home.jsx'
 import Desk from './components/pages/Desk.jsx'
 import Reports from './components/pages/Reports.jsx'
+import Manager from './components/pages/Manager.jsx'
 import Configuration from './components/pages/Configuration.jsx'
 import AboutUs from './components/pages/AboutUs.jsx'
 import Profile from './components/pages/Profile.jsx'
@@ -33,6 +34,7 @@ function App() {
                 />
               } />
               <Route path="reports" element={<Reports />} />
+              <Route path="manager" element={<Manager />} />
               <Route path="configuration" element={
                 <Configuration 
                   heightPresets={heightPresets} 

@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import { mainNavItems, footerNavItems, profileNavItem } from "../data/navigationItems";
+import { mainNavItems, footerNavItems, profileNavItem, managerNavItem } from "../data/navigationItems";
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar({ navRef, isOpen }) {
+  const { isManager } = useAuth();
   return (
     <nav 
       ref={navRef}
@@ -25,6 +27,13 @@ export default function Navbar({ navRef, isOpen }) {
             path={item.path}
           />
         ))}
+        {isManager && (
+          <NavbarItem 
+            icon={managerNavItem.icon} 
+            label={managerNavItem.label}
+            path={managerNavItem.path}
+          />
+        )}
       </NavSection>
 
       <NavSection>

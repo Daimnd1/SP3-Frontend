@@ -4,7 +4,8 @@ import {
   Settings2, 
   ChartColumn, 
   CircleUserRound, 
-  Info
+  Info,
+  Users
 } from "lucide-react";
 
 export const mainNavItems = [
@@ -12,6 +13,12 @@ export const mainNavItems = [
   { icon: ArrowUpDown, label: "Desk", path: "/desk" },
   { icon: ChartColumn, label: "Reports", path: "/reports" },
 ];
+
+export const managerNavItem = {
+  icon: Users,
+  label: "Manager",
+  path: "/manager"
+};
 
 export const footerNavItems = [
   { icon: Settings2, label: "Configuration", path: "/configuration" },

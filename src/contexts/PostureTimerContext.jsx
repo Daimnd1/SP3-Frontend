@@ -1,9 +1,13 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useNotifications } from '../hooks/useNotifications';
+import { useAuth } from './AuthContext';
+import { createPostureSession, endPostureSession, logPostureChange } from '../lib/postureData';
 
 const PostureTimerContext = createContext();
 
 export function PostureTimerProvider({ children }) {
+  const { user } = useAuth();
+  
   // Timer state
   const [currentMode, setCurrentMode] = useState(null); // 'sitting' or 'standing'
   const [timeInCurrentMode, setTimeInCurrentMode] = useState(0); // milliseconds
@@ -11,6 +15,8 @@ export function PostureTimerProvider({ children }) {
   const startTimeRef = useRef(null); // Timestamp when tracking started
   const timerIntervalRef = useRef(null);
   const lastReminderTimeRef = useRef(null);
+  const currentSessionIdRef = useRef(null); // Track current session ID
+  const currentHeightRef = useRef(null); // Track height for session
   
   // Notification hook
   const { sendPostureReminder } = useNotifications();
@@ -71,29 +77,95 @@ export function PostureTimerProvider({ children }) {
   }, [isTracking]);
 
   // Change mode and reset timer
-  const changeMode = (newMode) => {
-    if (newMode !== currentMode) {
-      console.log(`⏱️ PostureTimer: Changing mode from ${currentMode} to ${newMode}, resetting timer`);
+  const changeMode = async (newMode, height, deskId) => {
+    if (newMode !== currentMode && user) {
+      // End previous session
+      if (currentMode && currentSessionIdRef.current) {
+        const endTime = Date.now();
+        const duration = endTime - startTimeRef.current;
+        
+        try {
+          await endPostureSession(
+            currentSessionIdRef.current,
+            height || currentHeightRef.current,
+            duration
+          );
+
+          // Log posture change
+          await logPostureChange(
+            user.id,
+            deskId,
+            currentMode,
+            newMode,
+            height || currentHeightRef.current
+          );
+        } catch (error) {
+          console.error('Failed to save session data:', error);
+        }
+      }
+
+      // Start new session
       setCurrentMode(newMode);
       setTimeInCurrentMode(0);
-      startTimeRef.current = Date.now(); // Reset start time
+      startTimeRef.current = Date.now();
+      currentHeightRef.current = height;
+
+      if (user && deskId) {
+        try {
+          const session = await createPostureSession(user.id, deskId, newMode, height);
+          currentSessionIdRef.current = session.id;
+        } catch (error) {
+          console.error('Failed to create session:', error);
+        }
+      }
     }
   };
 
   // Start tracking
-  const startTracking = (initialMode) => {
+  const startTracking = async (initialMode, height, deskId) => {
     setCurrentMode(initialMode);
     setTimeInCurrentMode(0);
-    startTimeRef.current = Date.now(); // Set start time
+    startTimeRef.current = Date.now();
+    currentHeightRef.current = height;
     setIsTracking(true);
+
+    // Create initial session
+    if (user && deskId) {
+      try {
+        const session = await createPostureSession(user.id, deskId, initialMode, height);
+        if (session) {
+          currentSessionIdRef.current = session.id;
+        }
+      } catch (error) {
+        console.error('Failed to start session:', error);
+      }
+    }
   };
 
   // Stop tracking
-  const stopTracking = () => {
+  const stopTracking = async () => {
+    // End current session
+    if (currentSessionIdRef.current && user) {
+      const endTime = Date.now();
+      const duration = endTime - startTimeRef.current;
+
+      try {
+        await endPostureSession(
+          currentSessionIdRef.current,
+          currentHeightRef.current,
+          duration
+        );
+      } catch (error) {
+        console.error('Failed to end session:', error);
+      }
+    }
+
     setIsTracking(false);
     setCurrentMode(null);
     setTimeInCurrentMode(0);
     startTimeRef.current = null;
+    currentSessionIdRef.current = null;
+    currentHeightRef.current = null;
   };
 
   // Trigger notification when reminder time is reached

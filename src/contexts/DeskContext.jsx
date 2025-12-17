@@ -57,30 +57,64 @@ export function DeskProvider({ children }) {
 
     let lastHeight = currentHeight;
     let wasMoving = false;
+    let lastSpeedSign = 0;
 
     const pollDeskState = async () => {
       try {
         const data = await getDeskData(deskId);
-        console.log('📡 Desk data response:', data.state);
         const newHeight = data.state.position_mm;
         const newSpeed = data.state.speed_mms || data.state.speed || 0;
 
         setCurrentHeight(newHeight);
         setSpeed(newSpeed);
 
-        // Detect when desk stops moving and sync height to database
-        if (wasMoving && newSpeed === 0 && user && dbDeskId) {
-          try {
-            await updateDeskHeight(dbDeskId, newHeight);
-          } catch (error) {
-            console.error('Failed to update desk height in database:', error);
+        // Handle target movement
+        if (targetHeight !== null) {
+          const tolerance = 30; // mm
+          const heightDiff = Math.abs(newHeight - targetHeight);
+          const reachedTarget = heightDiff <= tolerance;
+
+          // Target reached and stopped
+          if (reachedTarget && newSpeed === 0) {
+            setTargetHeight(null);
+            
+            // Sync to database
+            if (user && dbDeskId) {
+              try {
+                await updateDeskHeight(dbDeskId, newHeight);
+              } catch (error) {
+                console.error('Failed to update height:', error);
+              }
+            }
           }
         }
 
-        wasMoving = newSpeed > 0;
+        wasMoving = newSpeed !== 0;
         lastHeight = newHeight;
       } catch (error) {
         console.error('Failed to get desk data:', error);
+        
+        // Check if desk is unavailable (404 or network error)
+        if (error.message?.includes('not found') || error.message?.includes('404')) {
+          console.error('❌ Desk is unavailable. Disconnecting...');
+          
+          // Stop polling
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          
+          // Disconnect from desk
+          await disconnectFromDesk();
+          
+          // Show notification to user
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Desk Disconnected', {
+              body: 'The desk is no longer available and has been disconnected.',
+              icon: '/vite.svg'
+            });
+          }
+        }
       }
     };
 
@@ -92,7 +126,7 @@ export function DeskProvider({ children }) {
         pollingIntervalRef.current = null;
       }
     };
-  }, [isConnected, deskId, currentHeight, user, dbDeskId]);
+  }, [isConnected, deskId, user, dbDeskId]); // Remove currentHeight from dependencies!
 
   // Detect mode changes globally (works on any page)
   useEffect(() => {
@@ -106,11 +140,9 @@ export function DeskProvider({ children }) {
       const currentMode = currentHeight < 900 ? "sitting" : "standing";
       
       if (prevModeRef.current === null) {
-        console.log(`🎯 DeskContext: Initializing mode to ${currentMode}`);
         prevModeRef.current = currentMode;
       } else if (currentMode !== prevModeRef.current) {
-        console.log(`🔄 DeskContext: Mode changed from ${prevModeRef.current} to ${currentMode} - triggering timer reset`);
-        changeMode(currentMode);
+        changeMode(currentMode, currentHeight, dbDeskId);
         prevModeRef.current = currentMode;
       }
     }
