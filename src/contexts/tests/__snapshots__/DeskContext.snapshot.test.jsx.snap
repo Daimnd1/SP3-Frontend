@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DeskContext Snapshot Tests > should match initial state snapshot 1`] = `
+{
+  "connectToDesk": [Function],
+  "currentHeight": 0,
+  "dbDeskId": null,
+  "deskId": null,
+  "deskName": "",
+  "disconnectFromDesk": [Function],
+  "isConnected": false,
+  "moveDeskToHeight": [Function],
+  "setShowDeskDialog": [Function],
+  "showDeskDialog": false,
+  "speed": 0,
+  "targetHeight": null,
+}
+`;
