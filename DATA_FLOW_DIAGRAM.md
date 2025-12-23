@@ -42,14 +42,12 @@ graph TB
         PostureData[💾 postureData.js<br/>- createPostureSession<br/>- endPostureSession<br/>- logPostureChange<br/>- getPostureSessions<br/>- getPostureChanges]
         PostureAnalytics[📈 postureAnalytics.js<br/>- calculateDailyStats<br/>- getWeeklyStats<br/>- msToHours<br/>- calculatePostureBalance]
         ManagerAnalytics[👥 managerAnalytics.js<br/>- getUserPostureRankings<br/>- getOrganizationStats<br/>- getUserEmail]
-        PostureAI[🤖 postureAI.js<br/>- generatePostureInsights<br/>- Gemini API integration]
         Supabase[📦 supabase.js<br/>- Supabase Client]
     end
 
     subgraph "External Services"
         BackendServer[🖥️ Backend Server<br/>HTTP://51.21.129.98:3000<br/>- Desk Control API]
         SupabaseDB[(🗄️ Supabase Database<br/>- auth.users<br/>- profiles<br/>- user<br/>- desk<br/>- posture_sessions<br/>- posture_changes<br/>- user_desk_presets<br/>- desk_global_presets<br/>- notifications)]
-        GeminiAPI[🤖 Google Gemini API<br/>AI-powered insights]
     end
 
     %% Authentication Flow
@@ -81,9 +79,6 @@ graph TB
     PostureAnalytics --> PostureData
     PostureData --> Supabase
     Supabase -->|fetch sessions| SupabaseDB
-    Reports --> PostureAI
-    PostureAI --> GeminiAPI
-    GeminiAPI -->|AI insights| Reports
 
     %% Manager Flow
     Manager --> ManagerAnalytics
@@ -107,8 +102,8 @@ graph TB
     classDef uiStyle fill:#9b59b6,stroke:#6c3483,color:#fff
     
     class AuthContext,PostureTimer,DeskContext contextStyle
-    class BackendAPI,PostureData,PostureAnalytics,ManagerAnalytics,PostureAI,Supabase serviceStyle
-    class BackendServer,SupabaseDB,GeminiAPI externalStyle
+    class BackendAPI,PostureData,PostureAnalytics,ManagerAnalytics,Supabase serviceStyle
+    class BackendServer,SupabaseDB externalStyle
     class Home,Desk,Reports,Manager,Config,Profile,Navbar,Auth,Layout uiStyle
 ```
 

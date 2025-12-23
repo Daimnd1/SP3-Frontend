@@ -13,7 +13,6 @@ import {
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getWeeklyStats, msToHours, calculatePostureBalance } from "../../lib/postureAnalytics";
-import { generatePostureInsights } from "../../lib/postureAI";
 
 // Shared chart styles and configurations
 const chartColors = {
@@ -219,7 +218,6 @@ export default function Reports() {
   const [postureTimeData, setPostureTimeData] = useState([]);
   const [postureChangeData, setPostureChangeData] = useState([]);
   const [sessionDurationData, setSessionDurationData] = useState([]);
-  const [aiInsights, setAiInsights] = useState(null);
 
   useEffect(() => {
     async function loadData() {
@@ -262,10 +260,6 @@ export default function Reports() {
         setPostureTimeData(timeData);
         setPostureChangeData(changeData);
         setSessionDurationData(durationData);
-
-        // Try to generate AI insights
-        const insights = await generatePostureInsights(stats);
-        setAiInsights(insights);
       } catch (error) {
         console.error('Failed to load reports data:', error);
       } finally {
@@ -276,8 +270,8 @@ export default function Reports() {
     loadData();
   }, [user]);
 
-  // Use AI insights if available, otherwise fall back to rule-based analysis
-  const { habits, tips } = aiInsights || analyzePostureData(postureTimeData, postureChangeData, sessionDurationData);
+  // Use rule-based analysis
+  const { habits, tips } = analyzePostureData(postureTimeData, postureChangeData, sessionDurationData);
 
   if (loading) {
     return (
