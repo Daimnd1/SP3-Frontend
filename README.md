@@ -140,8 +140,3 @@ npm run test:e2e
 The frontend expects Supabase credentials and a backend API. The Netlify configuration proxies `/api/*` requests to the deployed backend used during the semester project.
 
 No secrets should be committed. Use `.env.local` for local credentials and `.env.example` as the public reference.
-
-## Portfolio Value
-
-This project demonstrates full frontend ownership in a distributed system: UI/UX design, React architecture, stateful business logic, authentication, backend integration, hardware-adjacent workflows, reporting dashboards, E2E testing, and deployment.
-
